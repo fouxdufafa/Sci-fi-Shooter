@@ -5,15 +5,11 @@ public class PlatformerCharacter2D : MonoBehaviour
 {
     [SerializeField] private float m_MaxSpeed = 10f;                    // The fastest the player can travel in the x axis.
     [SerializeField] private float m_JumpForce = 400f;                  // Amount of force added when the player jumps.
-    [Range(0, 1)] [SerializeField] private float m_CrouchSpeed = .36f;  // Amount of maxSpeed applied to crouching movement. 1 = 100%
-    [SerializeField] private bool m_AirControl = false;                 // Whether or not a player can steer while jumping;
     [SerializeField] private LayerMask m_WhatIsGround;                  // A mask determining what is ground to the character
 
     private Transform m_GroundCheck;    // A position marking where to check if the player is grounded.
     const float k_GroundedRadius = .2f; // Radius of the overlap circle to determine if grounded
     private bool m_Grounded;            // Whether or not the player is grounded.
-    private Transform m_CeilingCheck;   // A position marking where to check for ceilings
-    const float k_CeilingRadius = .01f; // Radius of the overlap circle to determine if the player can stand up
     private Animator m_Anim;            // Reference to the player's animator component.
     private Rigidbody2D m_Rigidbody2D;
     private bool m_FacingRight = true;  // For determining which way the player is currently facing.
@@ -26,7 +22,6 @@ public class PlatformerCharacter2D : MonoBehaviour
     {
         // Setting up references.
         m_GroundCheck = transform.Find("GroundCheck");
-        m_CeilingCheck = transform.Find("CeilingCheck");
         m_Anim = GetComponent<Animator>();
         m_Rigidbody2D = GetComponent<Rigidbody2D>();
     }
@@ -51,25 +46,18 @@ public class PlatformerCharacter2D : MonoBehaviour
     }
 
 
-    public void Move(float move, bool crouch, bool jump, bool wallHugPressed)
+    public void Move(float move, bool jump, WallHugButtonState wallHugButtonState)
     {
-        // If crouching, check to see if the character can stand up
-        if (!crouch && m_Anim.GetBool("Crouch"))
+        // Prevent rigidbody from sleeping in a stationary wall-hug state
+        if (wallHugButtonState == WallHugButtonState.End && m_Rigidbody2D.velocity.magnitude == 0)
         {
-            // If the character has a ceiling preventing them from standing up, keep them crouching
-            if (Physics2D.OverlapCircle(m_CeilingCheck.position, k_CeilingRadius, m_WhatIsGround))
-            {
-                crouch = true;
-            }
+            m_Rigidbody2D.WakeUp();
         }
-
-        // Set whether or not the character is crouching in the animator
-        m_Anim.SetBool("Crouch", crouch);
 
         // Determine if player is hugging a nearby wall
         if (!m_Grounded && nearbyWall)
         {
-            if (wallHugPressed)
+            if (wallHugButtonState == WallHugButtonState.Start || wallHugButtonState == WallHugButtonState.Remain)
             {
                 isHuggingWall = true;
             }
@@ -78,18 +66,24 @@ public class PlatformerCharacter2D : MonoBehaviour
                 isHuggingWall = false;
             }
         }
+        else
+        {
+            isHuggingWall = false;
+        }
 
-        //only control the player if grounded or airControl is turned on
+        //only move the player if grounded or not wall hugging
         if (m_Grounded || !isHuggingWall)
         {
-            // Reduce the speed if crouching by the crouchSpeed multiplier
-            move = (crouch ? move * m_CrouchSpeed : move);
-
             // The Speed animator parameter is set to the absolute value of the horizontal input.
             m_Anim.SetFloat("Speed", Mathf.Abs(move));
 
             // Move the character
             m_Rigidbody2D.velocity = new Vector2(move * m_MaxSpeed, m_Rigidbody2D.velocity.y);
+
+            if (!m_Grounded)
+            {
+                print("Moved player " + move * m_MaxSpeed);
+            }
 
             // If the input is moving the player right and the player is facing left...
             if (move > 0 && !m_FacingRight)
@@ -138,28 +132,32 @@ public class PlatformerCharacter2D : MonoBehaviour
 
     private void OnCollisionStay2D(Collision2D collision)
     {
-        if (collision.gameObject == nearbyWall && isHuggingWall)
+        if (collision.gameObject == nearbyWall)
         {
-            print("Applying magnetic force");
-            
-            // First, offset gravity
-            m_Rigidbody2D.AddForce(-1 * Physics2D.gravity * m_Rigidbody2D.gravityScale, ForceMode2D.Force);
+            if (isHuggingWall)
+            {
+                print("Applying magnetic force");
 
-            if (m_Rigidbody2D.velocity.magnitude < 0.1)
-            {
-                // Normalize low velocity
-                m_Rigidbody2D.velocity = Vector2.zero;
+                // First, offset gravity
+                m_Rigidbody2D.AddForce(-1 * Physics2D.gravity * m_Rigidbody2D.gravityScale, ForceMode2D.Force);
+
+                if (m_Rigidbody2D.velocity.magnitude < 0.1)
+                {
+                    // Normalize low velocity
+                    m_Rigidbody2D.velocity = Vector2.zero;
+                }
+                else if (m_Rigidbody2D.velocity.y > 0)
+                {
+                    // Stop residual upwards velocity, "stick" to the wall
+                    m_Rigidbody2D.velocity = Vector2.zero;
+                }
+                else if (m_Rigidbody2D.velocity.y < 0)
+                {
+                    // This is the "friction" force pushing up on the player
+                    m_Rigidbody2D.AddForce(Vector2.up * m_Rigidbody2D.velocity.y * -1 * m_Rigidbody2D.gravityScale * wallHugForceMultiplier);
+                }
             }
-            else if (m_Rigidbody2D.velocity.y > 0)
-            {
-                // Stop residual upwards velocity, "stick" to the wall
-                m_Rigidbody2D.velocity = Vector2.zero;
-            }
-            else if (m_Rigidbody2D.velocity.y < 0)
-            {
-                // This is the "friction" force pushing up on the player
-                m_Rigidbody2D.AddForce(Vector2.up * m_Rigidbody2D.velocity.y * -1 * m_Rigidbody2D.gravityScale * wallHugForceMultiplier);
-            }
+            
         }
     }
 
