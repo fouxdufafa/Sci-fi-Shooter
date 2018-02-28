@@ -51,9 +51,8 @@ GameObject:
   - component: {fileID: 4477996478213252}
   - component: {fileID: 212422153015754164}
   - component: {fileID: 95532240877291646}
-  - component: {fileID: 58866567983828380}
   - component: {fileID: 50877106352907490}
-  - component: {fileID: 61164771412742774}
+  - component: {fileID: 70129197432328730}
   - component: {fileID: 114231124442777788}
   - component: {fileID: 114708981220407146}
   m_Layer: 0
@@ -83,7 +82,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1749873495395200}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.4141083, y: -2.700228, z: 0}
+  m_LocalPosition: {x: -7.811256, y: -2.3070273, z: 0}
   m_LocalScale: {x: 1.7715329, y: 1.7715304, z: 1}
   m_Children:
   - {fileID: 4769036465357940}
@@ -124,8 +123,8 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!58 &58866567983828380
-CircleCollider2D:
+--- !u!70 &70129197432328730
+CapsuleCollider2D:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
@@ -136,34 +135,9 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.45}
-  serializedVersion: 2
-  m_Radius: 0.16
---- !u!61 &61164771412742774
-BoxCollider2D:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1749873495395200}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.375, y: 1.375}
-    newSize: {x: 1, y: 1}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 0.25, y: 0.68}
-  m_EdgeRadius: 0
+  m_Offset: {x: 0.00000055515574, y: -0.1193382}
+  m_Size: {x: 0.26547933, y: 0.9686083}
+  m_Direction: 0
 --- !u!95 &95532240877291646
 Animator:
   serializedVersion: 3
@@ -192,13 +166,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5e43141b87ae6846b648bf0594594ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_MaxSpeed: 15
-  m_JumpForce: 1000
-  m_CrouchSpeed: 0.354
-  m_AirControl: 1
-  m_WhatIsGround:
+  maxSpeed: 12
+  jumpForce: 1000
+  whatIsGround:
     serializedVersion: 2
     m_Bits: 4294967295
+  wallHugForceMultiplier: 3
+  crosshair: {fileID: 0}
+  crosshairRadius: 5
 --- !u!114 &114708981220407146
 MonoBehaviour:
   m_ObjectHideFlags: 1
