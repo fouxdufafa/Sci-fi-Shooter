@@ -7,6 +7,14 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float jumpForce = 400f;                  // Amount of force added when the player jumps.
     [SerializeField] private LayerMask whatIsGround;                  // A mask determining what is ground to the character
     
+    public enum State
+    {
+        Grounded = 1,
+        Jumping = 2,
+        WallHugging = 3
+    }
+
+    private State currentState;
 
     private Transform groundCheck;    // A position marking where to check if the player is grounded.
     const float groundedRadius = .2f; // Radius of the overlap circle to determine if grounded
@@ -23,6 +31,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] GameObject crosshair;
     [SerializeField] float crosshairRadius;
 
+    // grounded -> jumping
+    // jumping -> grounded, wall hugging
+    // wall hugging -> jumping
 
     private void Awake()
     {
@@ -31,7 +42,6 @@ public class PlayerMovement : MonoBehaviour
         animator = GetComponent<Animator>();
         rigidbody2d = GetComponent<Rigidbody2D>();
     }
-
 
     private void FixedUpdate()
     {
@@ -51,17 +61,16 @@ public class PlayerMovement : MonoBehaviour
         animator.SetFloat("vSpeed", rigidbody2d.velocity.y);
     }
 
-
-    public void Move(float horizontal, float vertical, bool jump, TriggerState leftTriggerState, float horizontalAim, float verticalAim)
+    public void Move(float horizontal, float vertical, bool jump, TriggerState leftTrigger, float horizontalAim, float verticalAim)
     {
         // Prevent rigidbody from sleeping in a stationary wall-hug state
-        if (leftTriggerState == TriggerState.End && rigidbody2d.velocity.magnitude == 0)
+        if (leftTrigger == TriggerState.End && rigidbody2d.velocity.magnitude == 0)
         {
             rigidbody2d.WakeUp();
         }
 
         // Determine if player is hugging a nearby wall
-        if (!isGrounded && isNearbyWall && (leftTriggerState == TriggerState.Start || leftTriggerState == TriggerState.Stay))
+        if (!isGrounded && isNearbyWall && (leftTrigger == TriggerState.Start || leftTrigger == TriggerState.Stay))
         {
             isHuggingWall = true;
         }
@@ -74,7 +83,7 @@ public class PlayerMovement : MonoBehaviour
         // Can aim if either
         // 1. grounded (in which case, disable movement)
         // 2. wall hugging
-        if ((leftTriggerState == TriggerState.Start || leftTriggerState == TriggerState.Stay) && (isGrounded || isHuggingWall))
+        if ((leftTrigger == TriggerState.Start || leftTrigger == TriggerState.Stay) && (isGrounded || isHuggingWall))
         {
             isAiming = true;
 
@@ -85,7 +94,7 @@ public class PlayerMovement : MonoBehaviour
                 animator.SetFloat("Speed", 0f);
             }
             
-            Vector3 offset = new Vector2(horizontal, vertical).normalized * crosshairRadius;
+            Vector3 offset = new Vector2(horizontalAim, verticalAim).normalized * crosshairRadius;
             crosshair.GetComponent<SpriteRenderer>().enabled = offset.magnitude > 0;
             crosshair.transform.position = transform.position + offset;
             if (horizontal > 0 && !isFacingRight)
@@ -139,6 +148,7 @@ public class PlayerMovement : MonoBehaviour
             // Add a vertical force to the player.
             isGrounded = false;
             animator.SetBool("Ground", false);
+            rigidbody2d.velocity = new Vector2(rigidbody2d.velocity.x, 0);
             rigidbody2d.AddForce(new Vector2(0f, jumpForce));
         }
     }
