@@ -15,8 +15,10 @@ public enum TriggerState
 public class PlayerInput : MonoBehaviour
 {
     PlayerMovement character;
-    float horizontal;
-    float vertical;
+    float horizontalMove;
+    float verticalMove;
+    float horizontalAim;
+    float verticalAim;
     bool jump;
     TriggerState leftTriggerState;
 
@@ -38,8 +40,10 @@ public class PlayerInput : MonoBehaviour
             jump = CrossPlatformInputManager.GetButtonDown("Jump");
         }
 
-        horizontal = CrossPlatformInputManager.GetAxis("Horizontal");
-        vertical = CrossPlatformInputManager.GetAxis("Vertical");
+        horizontalMove = CrossPlatformInputManager.GetAxis("Horizontal");
+        verticalMove = CrossPlatformInputManager.GetAxis("Vertical");
+        horizontalAim = CrossPlatformInputManager.GetAxis("Horizontal Aim");
+        verticalAim = CrossPlatformInputManager.GetAxis("Vertical Aim");
 
         ReadWallHugInput();
     }
@@ -47,7 +51,7 @@ public class PlayerInput : MonoBehaviour
     void FixedUpdate()
     {
         // Pass all parameters to the character control script.
-        character.Move(horizontal, vertical, jump, leftTriggerState);
+        character.Move(horizontalMove, verticalMove, jump, leftTriggerState, horizontalAim, verticalAim);
         jump = false;
     }
 

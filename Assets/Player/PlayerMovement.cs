@@ -52,7 +52,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
 
-    public void Move(float horizontal, float vertical, bool jump, TriggerState leftTriggerState)
+    public void Move(float horizontal, float vertical, bool jump, TriggerState leftTriggerState, float horizontalAim, float verticalAim)
     {
         // Prevent rigidbody from sleeping in a stationary wall-hug state
         if (leftTriggerState == TriggerState.End && rigidbody2d.velocity.magnitude == 0)
