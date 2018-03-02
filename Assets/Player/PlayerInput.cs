@@ -11,24 +11,21 @@ public enum TriggerState
     End = 3
 }
 
-// FixedUpdate reads last input
-
 [RequireComponent(typeof(PlayerMovement))]
 public class PlayerInput : MonoBehaviour
 {
     PlayerMovement movement;
-    PlayerAim aim;
     float horizontalMove;
     float verticalMove;
     float horizontalAim;
     float verticalAim;
     bool jump;
+    bool fire;
     TriggerState leftTriggerState;
 
     void Awake()
     {
         movement = GetComponent<PlayerMovement>();
-        aim = GetComponent<PlayerAim>();
         leftTriggerState = TriggerState.No;
     }
 
@@ -41,7 +38,12 @@ public class PlayerInput : MonoBehaviour
 
         if (!jump)
         {
-            jump = ReadJumpInput();
+            jump = CrossPlatformInputManager.GetButtonDown("Jump");
+        }
+
+        if (!fire)
+        {
+            fire = CrossPlatformInputManager.GetButtonDown("Fire1");
         }
 
         leftTriggerState = ReadLeftTrigger(leftTriggerState);
@@ -50,13 +52,9 @@ public class PlayerInput : MonoBehaviour
     void FixedUpdate()
     {
         // Pass all parameters to the character control script.
-        movement.Move(horizontalMove, verticalMove, jump, leftTriggerState, horizontalAim, verticalAim);
+        movement.Move(horizontalMove, verticalMove, jump, leftTriggerState, horizontalAim, verticalAim, fire);
         jump = false;
-    }
-
-    bool ReadJumpInput()
-    {
-        return CrossPlatformInputManager.GetButtonDown("Jump");
+        fire = false;
     }
 
     TriggerState ReadLeftTrigger(TriggerState previous)
