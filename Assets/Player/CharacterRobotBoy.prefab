@@ -203,7 +203,7 @@ MonoBehaviour:
   wallHugForceMultiplier: 1
   crosshair: {fileID: 0}
   crosshairRadius: 5
-  projectile: {fileID: 0}
+  projectile: {fileID: 1150193018522290, guid: 978add8ca6ef86e41929d460c5e050f3, type: 2}
   projectileSpeed: 50
   projectileSocket: {fileID: 1726923528934678}
 --- !u!114 &114708981220407146

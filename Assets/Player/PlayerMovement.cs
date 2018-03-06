@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -22,6 +23,7 @@ public class PlayerMovement : MonoBehaviour
     private bool isAiming = false;
     private bool isHuggingWall = false;
     private bool isFacingRight = true;
+    private bool isTakingDamage = false;
 
     // Adjacent wall, if any
     private GameObject adjacentWall = null;
@@ -29,14 +31,14 @@ public class PlayerMovement : MonoBehaviour
     private Transform groundCheck;    // A position marking where to check if the player is grounded.
     const float groundedRadius = .2f; // Radius of the overlap circle to determine if grounded
     private Animator animator;            // Reference to the player's animator component.
-    private Rigidbody2D rigidbody2d;
+    private Rigidbody2D rb2d;
     
     private void Awake()
     {
         // Setting up references.
         groundCheck = transform.Find("GroundCheck");
         animator = GetComponent<Animator>();
-        rigidbody2d = GetComponent<Rigidbody2D>();
+        rb2d = GetComponent<Rigidbody2D>();
     }
 
     private void FixedUpdate()
@@ -54,15 +56,37 @@ public class PlayerMovement : MonoBehaviour
         animator.SetBool("Ground", isGrounded);
 
         // Set the vertical animation
-        animator.SetFloat("vSpeed", rigidbody2d.velocity.y);
+        animator.SetFloat("vSpeed", rb2d.velocity.y);
     }
 
-    public void Move(float horizontal, float vertical, bool jump, TriggerState leftTrigger, float horizontalAim, float verticalAim, bool fire)
+    public void TakeDamage(float amount, float stunSeconds)
     {
-        // Prevent rigidbody from sleeping in a stationary wall-hug state
-        if (leftTrigger == TriggerState.End && rigidbody2d.velocity.magnitude == 0)
+        if (!isTakingDamage)
         {
-            rigidbody2d.WakeUp();
+            isTakingDamage = true;
+            StartCoroutine(TakeDamageCoroutine(stunSeconds));
+        }
+    }
+
+    IEnumerator TakeDamageCoroutine(float stunSeconds)
+    {
+        yield return new WaitForSeconds(stunSeconds);
+        isTakingDamage = false;
+    }
+
+    public void Move(float horizontal, float vertical, bool jumpPressed, TriggerState leftTrigger, float horizontalAim, float verticalAim, bool fire)
+    {
+        if (isTakingDamage)
+        {
+            animator.SetFloat("Speed", 0);
+            crosshair.GetComponent<SpriteRenderer>().enabled = false;
+            print("Taking damage, disable movement input");
+            return;
+        }
+        // Prevent rigidbody from sleeping in a stationary wall-hug state
+        if (leftTrigger == TriggerState.End && rb2d.velocity.magnitude == 0)
+        {
+            rb2d.WakeUp();
         }
 
         // Determine if player is hugging a nearby wall
@@ -75,7 +99,7 @@ public class PlayerMovement : MonoBehaviour
         bool canMove = !isAiming && !isHuggingWall;
 
         // Determine if player should fire off a jump
-        bool canJump = isGrounded && !isAiming && jump && animator.GetBool("Ground");
+        bool canJump = isGrounded && !isAiming && jumpPressed && animator.GetBool("Ground");
 
 
         // Handle wall hugging
@@ -84,22 +108,22 @@ public class PlayerMovement : MonoBehaviour
             print("Applying magnetic force");
 
             // First, offset gravity
-            rigidbody2d.AddForce(-1 * Physics2D.gravity * rigidbody2d.gravityScale, ForceMode2D.Force);
+            rb2d.AddForce(-1 * Physics2D.gravity * rb2d.gravityScale, ForceMode2D.Force);
 
-            if (rigidbody2d.velocity.magnitude < 0.1)
+            if (rb2d.velocity.magnitude < 0.1)
             {
                 // Normalize low velocity
-                rigidbody2d.velocity = Vector2.zero;
+                rb2d.velocity = Vector2.zero;
             }
-            else if (rigidbody2d.velocity.y > 0)
+            else if (rb2d.velocity.y > 0)
             {
                 // Stop residual upwards velocity, "stick" to the wall
-                rigidbody2d.velocity = Vector2.zero;
+                rb2d.velocity = Vector2.zero;
             }
-            else if (rigidbody2d.velocity.y < 0)
+            else if (rb2d.velocity.y < 0)
             {
                 // This is the "friction" force pushing up on the player
-                rigidbody2d.AddForce(Vector2.up * rigidbody2d.velocity.y * -1 * rigidbody2d.gravityScale * wallHugForceMultiplier);
+                rb2d.AddForce(Vector2.up * rb2d.velocity.y * -1 * rb2d.gravityScale * wallHugForceMultiplier);
             }
         }
 
@@ -113,7 +137,7 @@ public class PlayerMovement : MonoBehaviour
             if (isGrounded)
             {
                 // Prevent sliding while aiming
-                rigidbody2d.velocity = Vector2.zero;
+                rb2d.velocity = Vector2.zero;
                 animator.SetFloat("Speed", 0f);
             }
         }
@@ -130,7 +154,7 @@ public class PlayerMovement : MonoBehaviour
             animator.SetFloat("Speed", Mathf.Abs(horizontal));
 
             // Move the character
-            rigidbody2d.velocity = new Vector2(horizontal * maxSpeed, rigidbody2d.velocity.y);
+            rb2d.velocity = new Vector2(horizontal * maxSpeed, rb2d.velocity.y);
         }
         else
         {
@@ -139,9 +163,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (fire)
         {
-            GameObject newProjectile = Instantiate(projectile, projectileSocket.transform.position, Quaternion.identity);
             Vector3 velocity;
-
             if (isAiming)
             {
                 velocity = (crosshair.transform.position - projectileSocket.transform.position).normalized * projectileSpeed;
@@ -150,8 +172,9 @@ public class PlayerMovement : MonoBehaviour
             {
                 velocity = new Vector2(transform.localScale.normalized.x, 0) * projectileSpeed;
             }
-
-            newProjectile.GetComponent<Rigidbody>().velocity = velocity;
+            GameObject newProjectile = Instantiate(projectile, projectileSocket.transform.position, Quaternion.FromToRotation(Vector2.right, velocity.normalized));
+            newProjectile.transform.rotation = Quaternion.FromToRotation(Vector2.right, velocity.normalized);
+            newProjectile.GetComponent<Rigidbody2D>().velocity = velocity;
         }
 
         // Fire of a jump if we should
@@ -161,8 +184,8 @@ public class PlayerMovement : MonoBehaviour
             isGrounded = false;
             print("Jumped");
             animator.SetBool("Ground", false);
-            rigidbody2d.velocity = new Vector2(rigidbody2d.velocity.x, 0);
-            rigidbody2d.AddForce(new Vector2(0f, jumpForce));
+            rb2d.velocity = new Vector2(rb2d.velocity.x, 0);
+            rb2d.AddForce(new Vector2(0f, jumpForce));
         }
 
         // Finally, face the player in the correct direction.
@@ -207,12 +230,12 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.yellow;
-
         if (isAiming)
         {
             Gizmos.DrawLine(projectileSocket.transform.position, crosshair.transform.position);
         }
+
+        Gizmos.DrawWireSphere(transform.position, 1f);
         
     }
 }
