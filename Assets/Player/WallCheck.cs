@@ -5,7 +5,6 @@ using UnityEngine;
 public class WallCheck : MonoBehaviour {
 
     [SerializeField] float radius;
-    [SerializeField] public GameObject wallCheck;
     [SerializeField] LayerMask whatIsWall;
     [SerializeField] Mode mode;
     Vector3 raycastDirection = Vector3.right;
@@ -59,17 +58,11 @@ public class WallCheck : MonoBehaviour {
         if (hits.Length > 0)
         {
             print(hits.Length);
-            contact = new WallContact(hits[0].collider.gameObject, wallCheck, hits[0].point);
+            contact = new WallContact(hits[0].collider.gameObject, gameObject, hits[0].point);
         }
         else
         {
             contact = null;
         }
 	}
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawLine(transform.position, transform.position + raycastDirection * radius);
-    }
 }

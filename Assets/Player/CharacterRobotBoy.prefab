@@ -71,6 +71,7 @@ GameObject:
   - component: {fileID: 114079238684359666}
   - component: {fileID: 114231124442777788}
   - component: {fileID: 114708981220407146}
+  - component: {fileID: 255264984799881782}
   m_Layer: 0
   m_Name: CharacterRobotBoy
   m_TagString: Player
@@ -86,13 +87,43 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4285672897098828}
+  - component: {fileID: 114980124150745560}
   m_Layer: 0
-  m_Name: WallCheck
+  m_Name: WallGrabCheck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1939351930074116
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4147693253972116}
+  - component: {fileID: 114308064732579282}
+  m_Layer: 0
+  m_Name: WallJumpCheck
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4147693253972116
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1939351930074116}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4477996478213252}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4285672897098828
 Transform:
   m_ObjectHideFlags: 1
@@ -139,13 +170,14 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1749873495395200}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -8.237, y: -2.886, z: 0}
   m_LocalScale: {x: 1.7715329, y: 1.7715304, z: 1}
   m_Children:
   - {fileID: 4769036465357940}
   - {fileID: 4380505116126630}
   - {fileID: 4457720568937074}
   - {fileID: 4285672897098828}
+  - {fileID: 4147693253972116}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -174,7 +206,7 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 0
+  m_LinearDrag: 1
   m_AngularDrag: 0.05
   m_GravityScale: 5
   m_Material: {fileID: 0}
@@ -225,11 +257,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ca06e896ee66c249bebc0712630d632, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radius: 0.1
+  radius: 0.3
   wallCheck: {fileID: 1916999494768486}
   whatIsWall:
     serializedVersion: 2
     m_Bits: 512
+  mode: 2
 --- !u!114 &114231124442777788
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -246,12 +279,29 @@ MonoBehaviour:
   whatIsGround:
     serializedVersion: 2
     m_Bits: 4294967295
-  wallHugForceMultiplier: 1
+  groundedRadius: 0.2
   crosshair: {fileID: 0}
   crosshairRadius: 5
   projectile: {fileID: 1150193018522290, guid: 978add8ca6ef86e41929d460c5e050f3, type: 2}
   projectileSpeed: 50
   projectileSocket: {fileID: 1726923528934678}
+--- !u!114 &114308064732579282
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1939351930074116}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ca06e896ee66c249bebc0712630d632, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  radius: 0.4
+  wallCheck: {fileID: 0}
+  whatIsWall:
+    serializedVersion: 2
+    m_Bits: 512
+  mode: 2
 --- !u!114 &114708981220407146
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -263,6 +313,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ea86013802126845ad63758baf12565, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  leftTriggerState: 0
+--- !u!114 &114980124150745560
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1916999494768486}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ca06e896ee66c249bebc0712630d632, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  radius: 0.3
+  wallCheck: {fileID: 0}
+  whatIsWall:
+    serializedVersion: 2
+    m_Bits: 512
+  mode: 2
 --- !u!212 &212422153015754164
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -307,3 +375,20 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
+--- !u!255 &255264984799881782
+FixedJoint2D:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1749873495395200}
+  m_Enabled: 1
+  serializedVersion: 4
+  m_EnableCollision: 0
+  m_ConnectedRigidBody: {fileID: 0}
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
+  m_AutoConfigureConnectedAnchor: 1
+  m_Anchor: {x: 0, y: 0}
+  m_ConnectedAnchor: {x: -8.237, y: -2.886}
+  m_DampingRatio: 0
+  m_Frequency: 0
