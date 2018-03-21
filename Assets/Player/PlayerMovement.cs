@@ -20,8 +20,6 @@ public class PlayerMovement : MonoBehaviour
 
     // State / position flags
     private bool isGrounded;
-    private bool isAiming = false;
-    private bool isHuggingWall = false;
     private bool isFacingRight = true;
     private bool isTakingDamage = false;
 
@@ -33,6 +31,8 @@ public class PlayerMovement : MonoBehaviour
     WallCheck wallCheck;
     GameObject activeWall;
     FixedJoint2D joint;
+    float lastWallJumpTime = 0f;
+    float wallJumpDuration = 0.1f;
     
     private void Awake()
     {
@@ -83,41 +83,25 @@ public class PlayerMovement : MonoBehaviour
 
     public void Move(float horizontal, float vertical, bool jumpPressed, TriggerState leftTrigger, float horizontalAim, float verticalAim, bool fire)
     {
-        if (isTakingDamage)
-        {
-            animator.SetFloat("Speed", 0);
-            crosshair.GetComponent<SpriteRenderer>().enabled = false;
-            return;
-        }
-
-        // Prevent rigidbody from sleeping in a stationary wall-hug state
-        if (leftTrigger == TriggerState.End && rb2d.velocity.magnitude == 0)
-        {
-            rb2d.WakeUp();
-        }
-
         bool isNearWall = wallCheck.Contact != null;
 
         bool shouldStartHuggingWall = (!isGrounded && isNearWall && !activeWall && (leftTrigger == TriggerState.Start || leftTrigger == TriggerState.Stay));
 
         bool shouldReleaseWall = (activeWall && !((leftTrigger == TriggerState.Start || leftTrigger == TriggerState.Stay)));
 
-        // Determine if player is hugging a nearby wall
-        isHuggingWall = (!isGrounded && isNearWall && (leftTrigger == TriggerState.Start || leftTrigger == TriggerState.Stay));
+        bool isAiming = (leftTrigger == TriggerState.Start || leftTrigger == TriggerState.Stay) && (isGrounded || activeWall);
 
-        // Determine if player is aiming
-        isAiming = (leftTrigger == TriggerState.Start || leftTrigger == TriggerState.Stay) && (isGrounded || activeWall);
+        bool shouldMove = !isAiming && !activeWall && (Time.fixedTime - lastWallJumpTime > wallJumpDuration);
 
-        // Determine if player can move (not aiming or wallhugging)
-        bool canMove = !isAiming && !activeWall;
+        bool shouldJump = jumpPressed && !isAiming && isGrounded && animator.GetBool("Ground");
 
-        // Determine if player should fire off a jump
-        bool canJump = isGrounded && !isAiming && jumpPressed && animator.GetBool("Ground");
+        bool shouldWallJump = jumpPressed && isNearWall && !isGrounded;
+
+        WallCheck.WallContact contact = wallCheck.Contact;
 
         if (shouldStartHuggingWall)
         {
             // Start hugging a wall
-            WallCheck.WallContact contact = wallCheck.Contact;
             activeWall = contact.Wall;
             joint.enabled = true;
             joint.connectedBody = contact.Wall.GetComponentInParent<Rigidbody2D>();
@@ -133,22 +117,6 @@ public class PlayerMovement : MonoBehaviour
         }
 
         print(activeWall);
-
-        // Handle wall hugging
-        //if (isHuggingWall)
-        //{
-        //    print("Grabbing static wall");
-        //    transform.SetParent(wallCheck.Contact.Wall.transform);
-        //    rb2d.velocity = Vector2.zero;
-        //    rb2d.gravityScale = 0;
-
-        //}
-        //else
-        //{
-        //    print("Releasing wall");
-        //    transform.SetParent(null);
-        //    rb2d.gravityScale = gravityScale;
-        //}
 
         // Handle aiming / crosshair rendering
         if (isAiming)
@@ -169,21 +137,6 @@ public class PlayerMovement : MonoBehaviour
             crosshair.GetComponent<SpriteRenderer>().enabled = false;
         }
 
-
-        // Handle movement.
-        if (canMove)
-        {
-            // The Speed animator parameter is set to the absolute value of the horizontal input.
-            animator.SetFloat("Speed", Mathf.Abs(horizontal));
-
-            // Move the character
-            rb2d.velocity = new Vector2(horizontal * maxSpeed, rb2d.velocity.y);
-        }
-        else
-        {
-            animator.SetFloat("Speed", 0f);
-        }
-
         if (fire)
         {
             Vector3 velocity;
@@ -201,7 +154,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Fire of a jump if we should
-        if (canJump)
+        if (shouldJump)
         {
             // Add a vertical force to the player.
             isGrounded = false;
@@ -209,6 +162,42 @@ public class PlayerMovement : MonoBehaviour
             animator.SetBool("Ground", false);
             rb2d.velocity = new Vector2(rb2d.velocity.x, 0);
             rb2d.AddForce(new Vector2(0f, jumpForce));
+        }
+
+        if (shouldWallJump)
+        {
+            // add upwards diagonal force away from the wall
+            Vector2 contactPoint = contact.ContactPoint;
+            Vector2 jumpDirection;
+
+            if (transform.position.x < contactPoint.x)
+            {
+                // wall is on the right, push up and left
+                jumpDirection = (new Vector2(-1, 1)).normalized;
+            }
+            else
+            {
+                // wall is on the left, push up and right
+                jumpDirection = (new Vector2(1, 1)).normalized;
+            }
+            rb2d.velocity = new Vector2(0, 0);
+            rb2d.AddForce(jumpDirection * jumpForce * 1.5f);
+
+            lastWallJumpTime = Time.fixedTime;
+        }
+
+        // Handle movement.
+        if (shouldMove)
+        {
+            // The Speed animator parameter is set to the absolute value of the horizontal input.
+            animator.SetFloat("Speed", Mathf.Abs(horizontal));
+
+            // Move the character
+            rb2d.velocity = new Vector2(horizontal * maxSpeed, rb2d.velocity.y);
+        }
+        else
+        {
+            animator.SetFloat("Speed", 0f);
         }
 
         // Finally, face the player in the correct direction.
@@ -238,11 +227,6 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (isAiming)
-        {
-            //Gizmos.DrawLine(projectileSocket.transform.position, crosshair.transform.position);
-        }
-
         if (activeWall)
         {
             Gizmos.color = Color.red;

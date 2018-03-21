@@ -15,7 +15,6 @@ public class WallCheck : MonoBehaviour {
         GameObject hitWall;
         Vector2 point;
         
-
         public WallContact(GameObject wall, GameObject hitWall, Vector2 point)
         {
             this.wall = wall;
