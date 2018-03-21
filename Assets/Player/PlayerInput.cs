@@ -21,7 +21,7 @@ public class PlayerInput : MonoBehaviour
     float verticalAim;
     bool jump;
     bool fire;
-    TriggerState leftTriggerState;
+    public TriggerState leftTriggerState;
 
     void Awake()
     {

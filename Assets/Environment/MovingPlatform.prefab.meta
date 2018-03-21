@@ -1,8 +1,6 @@
 fileFormatVersion: 2
-guid: ee364310979c445458a662ebe4c26f39
-labels:
-- SceneSetup
-timeCreated: 1519323881
+guid: 3f346b594581bdc449f31e3dbebb7d32
+timeCreated: 1521055785
 licenseType: Free
 NativeFormatImporter:
   externalObjects: {}

@@ -7,7 +7,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float maxSpeed = 10f;                    // The fastest the player can travel in the x axis.
     [SerializeField] private float jumpForce = 400f;                  // Amount of force added when the player jumps.
     [SerializeField] private LayerMask whatIsGround;                  // A mask determining what is ground to the character
-    [SerializeField] float wallHugForceMultiplier = 3f;
+    [SerializeField] float groundedRadius = .2f; // Radius of the overlap circle to determine if grounded
 
     // Crosshair
     [SerializeField] GameObject crosshair;
@@ -25,13 +25,14 @@ public class PlayerMovement : MonoBehaviour
     private bool isFacingRight = true;
     private bool isTakingDamage = false;
 
-    // Adjacent wall, if any
-    private GameObject adjacentWall = null;
-
     private Transform groundCheck;    // A position marking where to check if the player is grounded.
-    const float groundedRadius = .2f; // Radius of the overlap circle to determine if grounded
     private Animator animator;            // Reference to the player's animator component.
     private Rigidbody2D rb2d;
+    private float gravityScale;
+
+    WallCheck wallCheck;
+    GameObject activeWall;
+    FixedJoint2D joint;
     
     private void Awake()
     {
@@ -39,6 +40,12 @@ public class PlayerMovement : MonoBehaviour
         groundCheck = transform.Find("GroundCheck");
         animator = GetComponent<Animator>();
         rb2d = GetComponent<Rigidbody2D>();
+        wallCheck = GetComponent<WallCheck>();
+        activeWall = null;
+        gravityScale = rb2d.gravityScale; // save gravity scale
+
+        joint = GetComponent<FixedJoint2D>();
+        joint.enabled = false;
     }
 
     private void FixedUpdate()
@@ -80,52 +87,68 @@ public class PlayerMovement : MonoBehaviour
         {
             animator.SetFloat("Speed", 0);
             crosshair.GetComponent<SpriteRenderer>().enabled = false;
-            print("Taking damage, disable movement input");
             return;
         }
+
         // Prevent rigidbody from sleeping in a stationary wall-hug state
         if (leftTrigger == TriggerState.End && rb2d.velocity.magnitude == 0)
         {
             rb2d.WakeUp();
         }
 
+        bool isNearWall = wallCheck.Contact != null;
+
+        bool shouldStartHuggingWall = (!isGrounded && isNearWall && !activeWall && (leftTrigger == TriggerState.Start || leftTrigger == TriggerState.Stay));
+
+        bool shouldReleaseWall = (activeWall && !((leftTrigger == TriggerState.Start || leftTrigger == TriggerState.Stay)));
+
         // Determine if player is hugging a nearby wall
-        isHuggingWall = (!isGrounded && adjacentWall && (leftTrigger == TriggerState.Start || leftTrigger == TriggerState.Stay));
+        isHuggingWall = (!isGrounded && isNearWall && (leftTrigger == TriggerState.Start || leftTrigger == TriggerState.Stay));
 
         // Determine if player is aiming
-        isAiming = (leftTrigger == TriggerState.Start || leftTrigger == TriggerState.Stay) && (isGrounded || isHuggingWall);
+        isAiming = (leftTrigger == TriggerState.Start || leftTrigger == TriggerState.Stay) && (isGrounded || activeWall);
 
         // Determine if player can move (not aiming or wallhugging)
-        bool canMove = !isAiming && !isHuggingWall;
+        bool canMove = !isAiming && !activeWall;
 
         // Determine if player should fire off a jump
         bool canJump = isGrounded && !isAiming && jumpPressed && animator.GetBool("Ground");
 
+        if (shouldStartHuggingWall)
+        {
+            // Start hugging a wall
+            WallCheck.WallContact contact = wallCheck.Contact;
+            activeWall = contact.Wall;
+            joint.enabled = true;
+            joint.connectedBody = contact.Wall.GetComponentInParent<Rigidbody2D>();
+
+            print("Anchor: " + joint.anchor);
+            print("Connected: " + joint.connectedAnchor);
+        }
+        else if (shouldReleaseWall)
+        {
+            activeWall = null;
+            joint.enabled = false;
+            joint.connectedBody = null;
+        }
+
+        print(activeWall);
 
         // Handle wall hugging
-        if (isHuggingWall)
-        {
-            print("Applying magnetic force");
+        //if (isHuggingWall)
+        //{
+        //    print("Grabbing static wall");
+        //    transform.SetParent(wallCheck.Contact.Wall.transform);
+        //    rb2d.velocity = Vector2.zero;
+        //    rb2d.gravityScale = 0;
 
-            // First, offset gravity
-            rb2d.AddForce(-1 * Physics2D.gravity * rb2d.gravityScale, ForceMode2D.Force);
-
-            if (rb2d.velocity.magnitude < 0.1)
-            {
-                // Normalize low velocity
-                rb2d.velocity = Vector2.zero;
-            }
-            else if (rb2d.velocity.y > 0)
-            {
-                // Stop residual upwards velocity, "stick" to the wall
-                rb2d.velocity = Vector2.zero;
-            }
-            else if (rb2d.velocity.y < 0)
-            {
-                // This is the "friction" force pushing up on the player
-                rb2d.AddForce(Vector2.up * rb2d.velocity.y * -1 * rb2d.gravityScale * wallHugForceMultiplier);
-            }
-        }
+        //}
+        //else
+        //{
+        //    print("Releasing wall");
+        //    transform.SetParent(null);
+        //    rb2d.gravityScale = gravityScale;
+        //}
 
         // Handle aiming / crosshair rendering
         if (isAiming)
@@ -137,7 +160,7 @@ public class PlayerMovement : MonoBehaviour
             if (isGrounded)
             {
                 // Prevent sliding while aiming
-                rb2d.velocity = Vector2.zero;
+                rb2d.velocity = new Vector2(0, rb2d.velocity.y);
                 animator.SetFloat("Speed", 0f);
             }
         }
@@ -208,34 +231,25 @@ public class PlayerMovement : MonoBehaviour
         Vector3 theScale = transform.localScale;
         theScale.x *= -1;
         transform.localScale = theScale;
-    }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("WallJumpable"))
-        {
-            print("Hit jumpable wall");
-            adjacentWall = collision.gameObject;
-        }
-    }
-
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("WallJumpable"))
-        {
-            print("Left jumpable wall");
-            adjacentWall = null;
-        }
+        // Also reposition the joint.
+        joint.anchor *= -1;
     }
 
     private void OnDrawGizmos()
     {
         if (isAiming)
         {
-            Gizmos.DrawLine(projectileSocket.transform.position, crosshair.transform.position);
+            //Gizmos.DrawLine(projectileSocket.transform.position, crosshair.transform.position);
         }
 
-        Gizmos.DrawWireSphere(transform.position, 1f);
-        
+        if (activeWall)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawSphere(transform.position + new Vector3(joint.anchor.x, joint.anchor.y), 0.1f);
+
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawSphere(new Vector3(joint.connectedAnchor.x, joint.connectedAnchor.y), 0.1f);
+        }
     }
 }
