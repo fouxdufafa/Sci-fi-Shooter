@@ -28,7 +28,8 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D rb2d;
     private float gravityScale;
 
-    WallCheck wallCheck;
+    WallCheck wallGrabCheck;
+    WallCheck wallJumpCheck;
     GameObject activeWall;
     FixedJoint2D joint;
     float lastWallJumpTime = 0f;
@@ -40,7 +41,8 @@ public class PlayerMovement : MonoBehaviour
         groundCheck = transform.Find("GroundCheck");
         animator = GetComponent<Animator>();
         rb2d = GetComponent<Rigidbody2D>();
-        wallCheck = GetComponent<WallCheck>();
+        wallGrabCheck = transform.Find("WallGrabCheck").GetComponent<WallCheck>();
+        wallJumpCheck = transform.Find("WallJumpCheck").GetComponent<WallCheck>();
         activeWall = null;
         gravityScale = rb2d.gravityScale; // save gravity scale
 
@@ -83,24 +85,23 @@ public class PlayerMovement : MonoBehaviour
 
     public void Move(float horizontal, float vertical, bool jumpPressed, TriggerState leftTrigger, float horizontalAim, float verticalAim, bool fire)
     {
-        bool isNearWall = wallCheck.Contact != null;
+        bool isWallJumping = Time.fixedTime - lastWallJumpTime <= wallJumpDuration;
 
-        bool shouldStartHuggingWall = (!isGrounded && isNearWall && !activeWall && (leftTrigger == TriggerState.Start || leftTrigger == TriggerState.Stay));
-
-        bool shouldReleaseWall = (activeWall && !((leftTrigger == TriggerState.Start || leftTrigger == TriggerState.Stay)));
+        bool shouldStartHuggingWall = (!isGrounded && wallGrabCheck.Contact != null && !activeWall && (leftTrigger == TriggerState.Start || leftTrigger == TriggerState.Stay) && !isWallJumping);
 
         bool isAiming = (leftTrigger == TriggerState.Start || leftTrigger == TriggerState.Stay) && (isGrounded || activeWall);
 
-        bool shouldMove = !isAiming && !activeWall && (Time.fixedTime - lastWallJumpTime > wallJumpDuration);
+        bool shouldMove = !isAiming && !activeWall && !isWallJumping;
 
         bool shouldJump = jumpPressed && !isAiming && isGrounded && animator.GetBool("Ground");
 
-        bool shouldWallJump = jumpPressed && isNearWall && !isGrounded;
+        bool shouldWallJump = jumpPressed && wallJumpCheck.Contact != null && !isGrounded;
 
-        WallCheck.WallContact contact = wallCheck.Contact;
+        bool shouldReleaseWall = (activeWall && !((leftTrigger == TriggerState.Start || leftTrigger == TriggerState.Stay)) || shouldWallJump);
 
         if (shouldStartHuggingWall)
         {
+            WallCheck.WallContact contact = wallGrabCheck.Contact;
             // Start hugging a wall
             activeWall = contact.Wall;
             joint.enabled = true;
@@ -167,6 +168,7 @@ public class PlayerMovement : MonoBehaviour
         if (shouldWallJump)
         {
             // add upwards diagonal force away from the wall
+            WallCheck.WallContact contact = wallJumpCheck.Contact;
             Vector2 contactPoint = contact.ContactPoint;
             Vector2 jumpDirection;
 

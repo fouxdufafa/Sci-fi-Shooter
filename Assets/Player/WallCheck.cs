@@ -7,7 +7,14 @@ public class WallCheck : MonoBehaviour {
     [SerializeField] float radius;
     [SerializeField] public GameObject wallCheck;
     [SerializeField] LayerMask whatIsWall;
+    [SerializeField] Mode mode;
     Vector3 raycastDirection = Vector3.right;
+
+    enum Mode
+    {
+        Raycast = 1,
+        CircleCast = 2
+    }
 
     public class WallContact
     {
@@ -30,16 +37,25 @@ public class WallCheck : MonoBehaviour {
     // Adjacent wall, if any
     private WallContact contact = null;
     public WallContact Contact { get { return contact; }}
-
-	// Use this for initialization
-	void Start () {
-        wallCheck = transform.Find("WallCheck").gameObject;
-	}
 	
 	// Update is called once per frame
-	void FixedUpdate () {
-        raycastDirection = (transform.localScale.x > 0) ? Vector2.right : Vector2.left;
-        RaycastHit2D[] hits = Physics2D.RaycastAll(wallCheck.transform.position, raycastDirection, radius, whatIsWall);
+	void FixedUpdate ()
+    {
+        RaycastHit2D[] hits;
+        switch (mode)
+        {
+            case Mode.CircleCast:
+                hits = Physics2D.CircleCastAll(transform.position, radius, Vector2.zero, 0f, whatIsWall);
+                break;
+            case Mode.Raycast:
+                raycastDirection = (transform.localScale.x > 0) ? Vector2.right : Vector2.left;
+                hits = Physics2D.RaycastAll(transform.position, raycastDirection, radius, whatIsWall);
+                break;
+            default:
+                hits = new RaycastHit2D[0];
+                break;
+        }
+        
         if (hits.Length > 0)
         {
             print(hits.Length);
@@ -54,6 +70,6 @@ public class WallCheck : MonoBehaviour {
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.cyan;
-        Gizmos.DrawLine(wallCheck.transform.position, wallCheck.transform.position + raycastDirection * radius);
+        Gizmos.DrawLine(transform.position, transform.position + raycastDirection * radius);
     }
 }
