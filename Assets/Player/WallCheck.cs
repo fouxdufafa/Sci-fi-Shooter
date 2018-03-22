@@ -57,7 +57,6 @@ public class WallCheck : MonoBehaviour {
         
         if (hits.Length > 0)
         {
-            print(hits.Length);
             contact = new WallContact(hits[0].collider.gameObject, gameObject, hits[0].point);
         }
         else

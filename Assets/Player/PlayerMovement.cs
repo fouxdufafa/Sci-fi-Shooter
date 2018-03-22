@@ -28,12 +28,18 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D rb2d;
     private float gravityScale;
 
+    // Wall mechanics
     WallCheck wallGrabCheck;
     WallCheck wallJumpCheck;
     GameObject activeWall;
     FixedJoint2D joint;
     float lastWallJumpTime = 0f;
     float wallJumpDuration = 0.1f;
+
+    // Roll mechanics
+    float lastRollTime = 0f;
+    float rollDuration = 0.3f;
+    float rollSpeed = 14f;
     
     private void Awake()
     {
@@ -83,21 +89,27 @@ public class PlayerMovement : MonoBehaviour
         isTakingDamage = false;
     }
 
-    public void Move(float horizontal, float vertical, bool jumpPressed, TriggerState leftTrigger, float horizontalAim, float verticalAim, bool fire)
+    public void Move(float horizontal, float vertical, bool jumpPressed, TriggerState leftTrigger, float horizontalAim, float verticalAim, bool fire, bool rollPressed)
     {
         bool isWallJumping = Time.fixedTime - lastWallJumpTime <= wallJumpDuration;
 
-        bool shouldStartHuggingWall = (!isGrounded && wallGrabCheck.Contact != null && !activeWall && (leftTrigger == TriggerState.Start || leftTrigger == TriggerState.Stay) && !isWallJumping);
+        bool isRolling = Time.fixedTime - lastRollTime <= rollDuration;
+        animator.SetBool("Roll", isRolling);
 
-        bool isAiming = (leftTrigger == TriggerState.Start || leftTrigger == TriggerState.Stay) && (isGrounded || activeWall);
+        bool shouldRoll = rollPressed;
 
-        bool shouldMove = !isAiming && !activeWall && !isWallJumping;
+        bool isAiming = (leftTrigger == TriggerState.Start || leftTrigger == TriggerState.Stay) && (isGrounded || activeWall) && !isRolling;
+
+        bool shouldMove = !isAiming && !activeWall && !isWallJumping && !isRolling && !shouldRoll;
 
         bool shouldJump = jumpPressed && !isAiming && isGrounded && animator.GetBool("Ground");
 
         bool shouldWallJump = jumpPressed && wallJumpCheck.Contact != null && !isGrounded;
 
-        bool shouldReleaseWall = (activeWall && !((leftTrigger == TriggerState.Start || leftTrigger == TriggerState.Stay)) || shouldWallJump);
+        bool shouldStartHuggingWall = (!isGrounded && wallGrabCheck.Contact != null && !activeWall && (leftTrigger == TriggerState.Start || leftTrigger == TriggerState.Stay) && !isWallJumping && !isRolling);
+
+        bool shouldReleaseWall = (activeWall && !((leftTrigger == TriggerState.Start || leftTrigger == TriggerState.Stay)) || shouldWallJump || shouldRoll);
+
 
         if (shouldStartHuggingWall)
         {
@@ -106,9 +118,6 @@ public class PlayerMovement : MonoBehaviour
             activeWall = contact.Wall;
             joint.enabled = true;
             joint.connectedBody = contact.Wall.GetComponentInParent<Rigidbody2D>();
-
-            print("Anchor: " + joint.anchor);
-            print("Connected: " + joint.connectedAnchor);
         }
         else if (shouldReleaseWall)
         {
@@ -116,8 +125,6 @@ public class PlayerMovement : MonoBehaviour
             joint.enabled = false;
             joint.connectedBody = null;
         }
-
-        print(activeWall);
 
         // Handle aiming / crosshair rendering
         if (isAiming)
@@ -154,12 +161,20 @@ public class PlayerMovement : MonoBehaviour
             newProjectile.GetComponent<Rigidbody2D>().velocity = velocity;
         }
 
+        if (shouldRoll)
+        {
+            lastRollTime = Time.fixedTime;
+            isRolling = true;
+            animator.SetBool("Roll", true);
+            // set rolling velocity
+            rb2d.velocity = new Vector2(transform.localScale.x * rollSpeed, rb2d.velocity.y);
+        }
+
         // Fire of a jump if we should
         if (shouldJump)
         {
             // Add a vertical force to the player.
             isGrounded = false;
-            print("Jumped");
             animator.SetBool("Ground", false);
             rb2d.velocity = new Vector2(rb2d.velocity.x, 0);
             rb2d.AddForce(new Vector2(0f, jumpForce));

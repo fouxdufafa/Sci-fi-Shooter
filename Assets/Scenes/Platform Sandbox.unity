@@ -389,52 +389,6 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 619d132f5dd157e4e9ebbd1085df9ee1, type: 2}
   m_IsPrefabParent: 0
---- !u!1 &397194957
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 397194958}
-  - component: {fileID: 397194959}
-  m_Layer: 0
-  m_Name: WallJumpCheck
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &397194958
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 397194957}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1421155536}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &397194959
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 397194957}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ca06e896ee66c249bebc0712630d632, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  radius: 0.4
-  wallCheck: {fileID: 0}
-  whatIsWall:
-    serializedVersion: 2
-    m_Bits: 512
-  mode: 2
 --- !u!1001 &486302339
 Prefab:
   m_ObjectHideFlags: 0
@@ -1460,28 +1414,6 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 619d132f5dd157e4e9ebbd1085df9ee1, type: 2}
   m_IsPrefabParent: 0
---- !u!1 &1190701513 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 1916999494768486, guid: 7c4cc9b08590ffd41b80f489008ac88e,
-    type: 2}
-  m_PrefabInternal: {fileID: 2110662268}
---- !u!114 &1190701515
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1190701513}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ca06e896ee66c249bebc0712630d632, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  radius: 0.3
-  wallCheck: {fileID: 0}
-  whatIsWall:
-    serializedVersion: 2
-    m_Bits: 512
-  mode: 2
 --- !u!1001 &1222097363
 Prefab:
   m_ObjectHideFlags: 0
@@ -1996,23 +1928,6 @@ GameObject:
   m_PrefabParentObject: {fileID: 1749873495395200, guid: 7c4cc9b08590ffd41b80f489008ac88e,
     type: 2}
   m_PrefabInternal: {fileID: 2110662268}
---- !u!255 &1751886931
-FixedJoint2D:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1751886923}
-  m_Enabled: 1
-  serializedVersion: 4
-  m_EnableCollision: 0
-  m_ConnectedRigidBody: {fileID: 0}
-  m_BreakForce: Infinity
-  m_BreakTorque: Infinity
-  m_AutoConfigureConnectedAnchor: 1
-  m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: -8.237, y: -2.886}
-  m_DampingRatio: 0
-  m_Frequency: 0
 --- !u!1001 &1782291509
 Prefab:
   m_ObjectHideFlags: 0
@@ -2333,35 +2248,6 @@ Prefab:
       propertyPath: crosshair
       value: 
       objectReference: {fileID: 1247454040}
-    - target: {fileID: 114079238684359666, guid: 7c4cc9b08590ffd41b80f489008ac88e,
-        type: 2}
-      propertyPath: radius
-      value: 0.3
-      objectReference: {fileID: 0}
-    - target: {fileID: 50877106352907490, guid: 7c4cc9b08590ffd41b80f489008ac88e,
-        type: 2}
-      propertyPath: m_CollisionDetection
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 50877106352907490, guid: 7c4cc9b08590ffd41b80f489008ac88e,
-        type: 2}
-      propertyPath: m_Interpolate
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 50877106352907490, guid: 7c4cc9b08590ffd41b80f489008ac88e,
-        type: 2}
-      propertyPath: m_LinearDrag
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114079238684359666, guid: 7c4cc9b08590ffd41b80f489008ac88e,
-        type: 2}
-      propertyPath: mode
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1916999494768486, guid: 7c4cc9b08590ffd41b80f489008ac88e, type: 2}
-      propertyPath: m_Name
-      value: WallGrabCheck
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7c4cc9b08590ffd41b80f489008ac88e, type: 2}
   m_IsPrefabParent: 0
