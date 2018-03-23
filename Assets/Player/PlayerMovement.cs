@@ -145,7 +145,7 @@ public class PlayerMovement : MonoBehaviour
             crosshair.GetComponent<SpriteRenderer>().enabled = false;
         }
 
-        if (fire)
+        if (fire && !isRolling)
         {
             Vector3 velocity;
             if (isAiming)
@@ -218,11 +218,11 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Finally, face the player in the correct direction.
-        if (horizontal > 0 && !isFacingRight)
+        if (horizontal > 0 && !isFacingRight && !isRolling)
         {
             Flip();
         }
-        else if (horizontal < 0 && isFacingRight)
+        else if (horizontal < 0 && isFacingRight && !isRolling)
         {
             Flip();
         }
