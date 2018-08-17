@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SimplePingPongMovement : MonoBehaviour {
+public class SimplePingPongMovement : AbstractMovement {
 
     [SerializeField] Vector3 destinationOffset;
-    [SerializeField] float speed;
-    [SerializeField] float destinationCheckRadius;
+    [SerializeField] float speed = 1;
+    [SerializeField] float destinationCheckRadius = 0.1f;
 
     Vector3 start;
     Vector3 destination;
@@ -24,6 +24,11 @@ public class SimplePingPongMovement : MonoBehaviour {
 
     // Update is called once per frame
     void FixedUpdate () {
+        if (stopped)
+        {
+            Debug.Log("Stopped movement");
+            return;
+        }
         if (movingTowardsDestination && IsNearDestination())
         {
             movingTowardsDestination = false;

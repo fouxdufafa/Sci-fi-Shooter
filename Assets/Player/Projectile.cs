@@ -4,7 +4,14 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour {
 
-	void OnTriggerEnter2D(Collider2D collider)
+    [SerializeField] float destroyAfterSeconds;
+
+    private void Start()
+    {
+        Destroy(gameObject, 1);
+    }
+
+    void OnTriggerEnter2D(Collider2D collider)
     {
         if (!collider.gameObject.CompareTag("Player"))
         {

@@ -10,13 +10,14 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float groundedRadius = .2f; // Radius of the overlap circle to determine if grounded
 
     // Crosshair
-    [SerializeField] GameObject crosshair;
+    [SerializeField] GameObject crosshairPrefab;
     [SerializeField] float crosshairRadius;
+    GameObject crosshair;
 
     // Projectile
     [SerializeField] GameObject projectile;
     [SerializeField] float projectileSpeed = 100f;
-    [SerializeField] GameObject projectileSocket;
+    [SerializeField] GameObject projectileSocket; // 1 855 355 5757
 
     // State / position flags
     private bool isGrounded;
@@ -37,7 +38,7 @@ public class PlayerMovement : MonoBehaviour
     float wallJumpDuration = 0.1f;
 
     // Roll mechanics
-    float lastRollTime = 0f;
+    float lastRollTime = -1f;
     float rollDuration = 0.3f;
     float rollSpeed = 14f;
     
@@ -51,6 +52,7 @@ public class PlayerMovement : MonoBehaviour
         wallJumpCheck = transform.Find("WallJumpCheck").GetComponent<WallCheck>();
         activeWall = null;
         gravityScale = rb2d.gravityScale; // save gravity scale
+        crosshair = Instantiate(crosshairPrefab);
 
         joint = GetComponent<FixedJoint2D>();
         joint.enabled = false;
