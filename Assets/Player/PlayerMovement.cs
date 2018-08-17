@@ -18,6 +18,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] GameObject projectile;
     [SerializeField] float projectileSpeed = 100f;
     [SerializeField] GameObject projectileSocket; // 1 855 355 5757
+    [SerializeField] AudioClip shootSound;
+    private AudioSource source;
 
     // State / position flags
     private bool isGrounded;
@@ -53,6 +55,7 @@ public class PlayerMovement : MonoBehaviour
         activeWall = null;
         gravityScale = rb2d.gravityScale; // save gravity scale
         crosshair = Instantiate(crosshairPrefab);
+        source = GetComponent<AudioSource>();
 
         joint = GetComponent<FixedJoint2D>();
         joint.enabled = false;
@@ -161,6 +164,7 @@ public class PlayerMovement : MonoBehaviour
             GameObject newProjectile = Instantiate(projectile, projectileSocket.transform.position, Quaternion.FromToRotation(Vector2.right, velocity.normalized));
             newProjectile.transform.rotation = Quaternion.FromToRotation(Vector2.right, velocity.normalized);
             newProjectile.GetComponent<Rigidbody2D>().velocity = velocity;
+            source.PlayOneShot(shootSound);
         }
 
         if (shouldRoll)

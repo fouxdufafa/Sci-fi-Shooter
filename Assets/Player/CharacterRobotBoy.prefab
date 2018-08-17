@@ -345,11 +345,13 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   groundedRadius: 0.2
-  crosshairPrefab: {fileID: 0}
+  crosshairPrefab: {fileID: 1466853576276846, guid: 15835a701e51c174997616648f61ae9f,
+    type: 2}
   crosshairRadius: 5
   projectile: {fileID: 1150193018522290, guid: 978add8ca6ef86e41929d460c5e050f3, type: 2}
   projectileSpeed: 50
   projectileSocket: {fileID: 1726923528934678}
+  shootSound: {fileID: 0}
 --- !u!114 &114308064732579282
 MonoBehaviour:
   m_ObjectHideFlags: 1

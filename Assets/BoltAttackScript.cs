@@ -14,6 +14,10 @@ public class BoltAttackScript : MonoBehaviour {
     [SerializeField] GameObject boltAimPrefab;
     [SerializeField] GameObject boltFirePrefab;
 
+    [SerializeField] AudioClip boltAimSound;
+    [SerializeField] AudioClip boltFireSound;
+    private AudioSource audioSource;
+
     public delegate void OnAim();
     public event OnAim onAimObservers;
 
@@ -31,7 +35,8 @@ public class BoltAttackScript : MonoBehaviour {
     private void Start()
     {
         zapRoutine = StartCoroutine(ZapRoutine());
-        aimTarget = new GameObject();
+        aimTarget = new GameObject("AimTarget");
+        audioSource = GetComponent<AudioSource>();
     }
 
     IEnumerator ZapRoutine()
@@ -51,6 +56,7 @@ public class BoltAttackScript : MonoBehaviour {
     {
         aimTarget.transform.SetPositionAndRotation(target.transform.position, Quaternion.identity);
         zapBall = Instantiate(boltAimPrefab, aimTarget.transform.position, Quaternion.identity);
+        audioSource.PlayOneShot(boltAimSound);
         if (onAimObservers != null)
         {
             onAimObservers();
@@ -65,6 +71,8 @@ public class BoltAttackScript : MonoBehaviour {
         LightningBoltPrefabScript bolt = zapBolt.GetComponent<LightningBoltPrefabScript>();
         bolt.Source = gameObject;
         bolt.Destination = aimTarget;
+        audioSource.loop = true;
+        audioSource.PlayOneShot(boltFireSound);
         if (onFireObservers != null)
         {
             onFireObservers();
@@ -75,9 +83,18 @@ public class BoltAttackScript : MonoBehaviour {
     {
         Destroy(zapBall);
         Destroy(zapBolt);
+        audioSource.Stop();
         if (onCeaseFireObservers != null)
         {
             onCeaseFireObservers();
         }
+    }
+
+    private void OnDestroy()
+    {
+        Destroy(zapBall);
+        Destroy(zapBolt);
+        audioSource.Stop();
+        StopCoroutine(zapRoutine);
     }
 }

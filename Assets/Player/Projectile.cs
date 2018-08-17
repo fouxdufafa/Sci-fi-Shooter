@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour {
 
+    [SerializeField] int damage = 10;
     [SerializeField] float destroyAfterSeconds;
 
     private void Start()
@@ -13,8 +14,15 @@ public class Projectile : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D collider)
     {
+        
         if (!collider.gameObject.CompareTag("Player"))
         {
+            IDamageable damageable = collider.gameObject.GetComponent<IDamageable>();
+            if (damageable != null)
+            {
+                Debug.Log("Hit an IDamageable");
+                damageable.TakeDamage(damage);
+            }
             Destroy(gameObject);
         }
     }
