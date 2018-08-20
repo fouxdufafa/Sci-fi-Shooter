@@ -21,6 +21,7 @@ public class PlayerInput : MonoBehaviour
     float verticalAim;
     bool jump;
     bool fire;
+    bool continuousFire;
     bool roll;
     public TriggerState leftTriggerState;
 
@@ -47,6 +48,11 @@ public class PlayerInput : MonoBehaviour
             fire = CrossPlatformInputManager.GetButtonDown("Fire1");
         }
 
+        if (!continuousFire)
+        {
+            continuousFire = CrossPlatformInputManager.GetButton("Fire1");
+        }
+
         if (!roll)
         {
             roll = CrossPlatformInputManager.GetButtonDown("Roll");
@@ -58,9 +64,10 @@ public class PlayerInput : MonoBehaviour
     void FixedUpdate()
     {
         // Pass all parameters to the character control script.
-        movement.Move(horizontalMove, verticalMove, jump, leftTriggerState, horizontalAim, verticalAim, fire, roll);
+        movement.Move(horizontalMove, verticalMove, jump, leftTriggerState, horizontalAim, verticalAim, fire, continuousFire, roll);
         jump = false;
         fire = false;
+        continuousFire = false;
         roll = false;
     }
 

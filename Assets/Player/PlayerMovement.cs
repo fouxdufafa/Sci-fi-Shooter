@@ -14,18 +14,18 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float crosshairRadius;
     GameObject crosshair;
 
-    // Projectile
+    // Weapons
     [SerializeField] GameObject projectile;
     [SerializeField] float projectileSpeed = 100f;
     [SerializeField] GameObject projectileSocket; // 1 855 355 5757
     [SerializeField] AudioClip shootSound;
+    ShootLaser shootLaser;
     private AudioSource source;
+    WeaponSystem weaponSystem;
 
-    // State / position flags
+    // Movement
     private bool isGrounded;
     private bool isFacingRight = true;
-    private bool isTakingDamage = false;
-
     private Transform groundCheck;    // A position marking where to check if the player is grounded.
     private Animator animator;            // Reference to the player's animator component.
     private Rigidbody2D rb2d;
@@ -54,7 +54,10 @@ public class PlayerMovement : MonoBehaviour
         wallJumpCheck = transform.Find("WallJumpCheck").GetComponent<WallCheck>();
         activeWall = null;
         gravityScale = rb2d.gravityScale; // save gravity scale
+
+        // Weapons
         crosshair = Instantiate(crosshairPrefab);
+        weaponSystem = GetComponent<WeaponSystem>();
         source = GetComponent<AudioSource>();
 
         joint = GetComponent<FixedJoint2D>();
@@ -79,22 +82,7 @@ public class PlayerMovement : MonoBehaviour
         animator.SetFloat("vSpeed", rb2d.velocity.y);
     }
 
-    public void TakeDamage(float amount, float stunSeconds)
-    {
-        if (!isTakingDamage)
-        {
-            isTakingDamage = true;
-            StartCoroutine(TakeDamageCoroutine(stunSeconds));
-        }
-    }
-
-    IEnumerator TakeDamageCoroutine(float stunSeconds)
-    {
-        yield return new WaitForSeconds(stunSeconds);
-        isTakingDamage = false;
-    }
-
-    public void Move(float horizontal, float vertical, bool jumpPressed, TriggerState leftTrigger, float horizontalAim, float verticalAim, bool fire, bool rollPressed)
+    public void Move(float horizontal, float vertical, bool jumpPressed, TriggerState leftTrigger, float horizontalAim, float verticalAim, bool fire, bool continuousFire, bool rollPressed)
     {
         bool isWallJumping = Time.fixedTime - lastWallJumpTime <= wallJumpDuration;
 
@@ -102,6 +90,10 @@ public class PlayerMovement : MonoBehaviour
         animator.SetBool("Roll", isRolling);
 
         bool shouldRoll = rollPressed;
+
+        bool shouldFire = fire && !isRolling;
+
+        bool shouldContinuousFire = continuousFire && !isRolling;
 
         bool isAiming = (leftTrigger == TriggerState.Start || leftTrigger == TriggerState.Stay) && (isGrounded || activeWall) && !isRolling;
 
@@ -150,8 +142,9 @@ public class PlayerMovement : MonoBehaviour
             crosshair.GetComponent<SpriteRenderer>().enabled = false;
         }
 
-        if (fire && !isRolling)
+        if (shouldFire || shouldContinuousFire)
         {
+            // All aim-dependent fire code should be executed in this block
             Vector3 velocity;
             if (isAiming)
             {
@@ -161,10 +154,27 @@ public class PlayerMovement : MonoBehaviour
             {
                 velocity = new Vector2(transform.localScale.normalized.x, 0) * projectileSpeed;
             }
-            GameObject newProjectile = Instantiate(projectile, projectileSocket.transform.position, Quaternion.FromToRotation(Vector2.right, velocity.normalized));
-            newProjectile.transform.rotation = Quaternion.FromToRotation(Vector2.right, velocity.normalized);
-            newProjectile.GetComponent<Rigidbody2D>().velocity = velocity;
-            source.PlayOneShot(shootSound);
+
+            if (shouldFire)
+            {
+                GameObject newProjectile = Instantiate(projectile, projectileSocket.transform.position, Quaternion.FromToRotation(Vector2.right, velocity.normalized));
+                newProjectile.transform.rotation = Quaternion.FromToRotation(Vector2.right, velocity.normalized);
+                newProjectile.GetComponent<Rigidbody2D>().velocity = velocity;
+                source.PlayOneShot(shootSound);
+            }
+
+            if (shouldContinuousFire)
+            {
+                //shootLaser.StartFire(velocity);
+            }
+            else
+            {
+                //shootLaser.StopFire();
+            }
+        }
+        else
+        {
+            //shootLaser.StopFire();
         }
 
         if (shouldRoll)
