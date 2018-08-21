@@ -4,20 +4,24 @@ using UnityEngine;
 
 public class PlayerAim : MonoBehaviour {
 
-    public delegate void OnAimChange(Vector2 direction);
-    public event OnAimChange onAimChangeListeners;
+    [SerializeField] GameObject crosshairPrefab;
+    [SerializeField] float crosshairDistance;
 
-    public void Aim(Vector2 direction)
+    GameObject crosshair;
+
+    public Vector2 currentDirection;
+
+    private void Start()
     {
-
+        crosshair = Instantiate(crosshairPrefab, transform);
     }
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    public void Aim(Vector2 newDirection, bool showCrosshair)
+    {
+        currentDirection = newDirection.normalized;
+        Vector3 offset = currentDirection * crosshairDistance;
+        bool crosshairActive = showCrosshair && offset.magnitude > 0;
+        Debug.Log("crosshairActive is " + crosshairActive);
+        crosshair.SetActive(showCrosshair && offset.magnitude > 0);
+        crosshair.transform.position = transform.position + offset;
+    }
 }

@@ -9,19 +9,13 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private LayerMask whatIsGround;                  // A mask determining what is ground to the character
     [SerializeField] float groundedRadius = .2f; // Radius of the overlap circle to determine if grounded
 
-    // Crosshair
-    [SerializeField] GameObject crosshairPrefab;
-    [SerializeField] float crosshairRadius;
-    GameObject crosshair;
-
     // Weapons
-    [SerializeField] GameObject projectile;
-    [SerializeField] float projectileSpeed = 100f;
-    [SerializeField] GameObject projectileSocket; // 1 855 355 5757
     [SerializeField] AudioClip shootSound;
-    ShootLaser shootLaser;
     private AudioSource source;
     WeaponSystem weaponSystem;
+    PlayerAim playerAim;
+    [SerializeField] AudioClip cycleWeaponSound;
+
 
     // Movement
     private bool isGrounded;
@@ -56,8 +50,8 @@ public class PlayerMovement : MonoBehaviour
         gravityScale = rb2d.gravityScale; // save gravity scale
 
         // Weapons
-        crosshair = Instantiate(crosshairPrefab);
         weaponSystem = GetComponent<WeaponSystem>();
+        playerAim = GetComponent<PlayerAim>();
         source = GetComponent<AudioSource>();
 
         joint = GetComponent<FixedJoint2D>();
@@ -82,7 +76,7 @@ public class PlayerMovement : MonoBehaviour
         animator.SetFloat("vSpeed", rb2d.velocity.y);
     }
 
-    public void Move(float horizontal, float vertical, bool jumpPressed, TriggerState leftTrigger, float horizontalAim, float verticalAim, bool fire, bool continuousFire, bool rollPressed)
+    public void Move(float horizontal, float vertical, bool jumpPressed, TriggerState leftTrigger, float horizontalAim, float verticalAim, bool firePressed, bool fireReleased, bool rollPressed, bool cycleWeaponPressed)
     {
         bool isWallJumping = Time.fixedTime - lastWallJumpTime <= wallJumpDuration;
 
@@ -91,9 +85,11 @@ public class PlayerMovement : MonoBehaviour
 
         bool shouldRoll = rollPressed;
 
-        bool shouldFire = fire && !isRolling;
+        bool shouldFire = firePressed && !isRolling;
 
-        bool shouldContinuousFire = continuousFire && !isRolling;
+        bool shouldStopFire = fireReleased;
+
+        bool shouldCycleWeapon = cycleWeaponPressed;
 
         bool isAiming = (leftTrigger == TriggerState.Start || leftTrigger == TriggerState.Stay) && (isGrounded || activeWall) && !isRolling;
 
@@ -126,10 +122,7 @@ public class PlayerMovement : MonoBehaviour
         // Handle aiming / crosshair rendering
         if (isAiming)
         {
-            Vector3 offset = new Vector2(horizontalAim, verticalAim).normalized * crosshairRadius;
-            crosshair.GetComponent<SpriteRenderer>().enabled = offset.magnitude > 0;
-            crosshair.transform.position = transform.position + offset;
-
+            playerAim.Aim(new Vector2(horizontalAim, verticalAim), true);
             if (isGrounded)
             {
                 // Prevent sliding while aiming
@@ -139,42 +132,23 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            crosshair.GetComponent<SpriteRenderer>().enabled = false;
+            playerAim.Aim(isFacingRight ? Vector2.right : Vector2.left, false);
         }
 
-        if (shouldFire || shouldContinuousFire)
+        if (shouldFire)
         {
-            // All aim-dependent fire code should be executed in this block
-            Vector3 velocity;
-            if (isAiming)
-            {
-                velocity = (crosshair.transform.position - projectileSocket.transform.position).normalized * projectileSpeed;
-            }
-            else
-            {
-                velocity = new Vector2(transform.localScale.normalized.x, 0) * projectileSpeed;
-            }
-
-            if (shouldFire)
-            {
-                GameObject newProjectile = Instantiate(projectile, projectileSocket.transform.position, Quaternion.FromToRotation(Vector2.right, velocity.normalized));
-                newProjectile.transform.rotation = Quaternion.FromToRotation(Vector2.right, velocity.normalized);
-                newProjectile.GetComponent<Rigidbody2D>().velocity = velocity;
-                source.PlayOneShot(shootSound);
-            }
-
-            if (shouldContinuousFire)
-            {
-                //shootLaser.StartFire(velocity);
-            }
-            else
-            {
-                //shootLaser.StopFire();
-            }
+            weaponSystem.OnFirePressed();
         }
-        else
+        
+        if (shouldStopFire)
         {
-            //shootLaser.StopFire();
+            weaponSystem.OnFireReleased();
+        }
+
+        if (shouldCycleWeapon)
+        {
+            weaponSystem.CycleWeapon();
+            GetComponent<AudioSource>().PlayOneShot(cycleWeaponSound);
         }
 
         if (shouldRoll)

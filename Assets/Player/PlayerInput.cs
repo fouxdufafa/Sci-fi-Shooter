@@ -20,10 +20,12 @@ public class PlayerInput : MonoBehaviour
     float horizontalAim;
     float verticalAim;
     bool jump;
-    bool fire;
-    bool continuousFire;
+    bool firePressed;
+    bool fireReleased;
     bool roll;
+    bool cycleWeapon;
     public TriggerState leftTriggerState;
+    public TriggerState firingTriggerState;
 
     void Awake()
     {
@@ -43,14 +45,14 @@ public class PlayerInput : MonoBehaviour
             jump = CrossPlatformInputManager.GetButtonDown("Jump");
         }
 
-        if (!fire)
+        if (!firePressed)
         {
-            fire = CrossPlatformInputManager.GetButtonDown("Fire1");
+            firePressed = CrossPlatformInputManager.GetButtonDown("Fire1");
         }
 
-        if (!continuousFire)
+        if (!fireReleased)
         {
-            continuousFire = CrossPlatformInputManager.GetButton("Fire1");
+            fireReleased = CrossPlatformInputManager.GetButtonUp("Fire1");
         }
 
         if (!roll)
@@ -58,20 +60,26 @@ public class PlayerInput : MonoBehaviour
             roll = CrossPlatformInputManager.GetButtonDown("Roll");
         }
 
-        leftTriggerState = ReadLeftTrigger(leftTriggerState);
+        if (!cycleWeapon)
+        {
+            cycleWeapon = CrossPlatformInputManager.GetButtonDown("CycleWeapon");
+        }
+
+        leftTriggerState = UpdateLeftTrigger(leftTriggerState);
     }
 
     void FixedUpdate()
     {
         // Pass all parameters to the character control script.
-        movement.Move(horizontalMove, verticalMove, jump, leftTriggerState, horizontalAim, verticalAim, fire, continuousFire, roll);
+        movement.Move(horizontalMove, verticalMove, jump, leftTriggerState, horizontalAim, verticalAim, firePressed, fireReleased, roll, cycleWeapon);
         jump = false;
-        fire = false;
-        continuousFire = false;
+        firePressed = false;
+        fireReleased = false;
         roll = false;
+        cycleWeapon = false;
     }
 
-    TriggerState ReadLeftTrigger(TriggerState previous)
+    TriggerState UpdateLeftTrigger(TriggerState previous)
     {
         bool triggerPressed = Input.GetAxis("Left Trigger") == 1;
         TriggerState next;

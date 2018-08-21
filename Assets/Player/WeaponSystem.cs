@@ -11,7 +11,7 @@ public interface IWeapon
 public class WeaponSystem : MonoBehaviour, IWeapon {
 
     // Use this for initialization, then transfer to queue
-    [SerializeField] List<IWeapon> initialWeapons;
+    [SerializeField] List<GameObject> initialWeapons;
 
     public delegate void OnWeaponChange(IWeapon activeWeapon);
     public event OnWeaponChange onWeaponChangeListeners;
@@ -21,7 +21,16 @@ public class WeaponSystem : MonoBehaviour, IWeapon {
 
     private void Start()
     {
-        weapons = new Queue<IWeapon>(initialWeapons);
+        weapons = new Queue<IWeapon>();
+        foreach (GameObject weapon in initialWeapons)
+        {
+            Component iWeapon = weapon.GetComponent(typeof(IWeapon));
+            if (iWeapon)
+            {
+                weapons.Enqueue(Instantiate(weapon, transform).GetComponent<IWeapon>());
+            }
+        }
+        activeWeapon = weapons.Peek();
     }
 
     public void CycleWeapon()
@@ -29,6 +38,7 @@ public class WeaponSystem : MonoBehaviour, IWeapon {
         activeWeapon.OnFireReleased();
         weapons.Enqueue(weapons.Dequeue());
         activeWeapon = weapons.Peek();
+        Debug.Log(activeWeapon);
         if (onWeaponChangeListeners != null)
         {
             onWeaponChangeListeners(activeWeapon);

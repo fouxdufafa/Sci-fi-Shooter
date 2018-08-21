@@ -10,29 +10,55 @@ public class RayGun : MonoBehaviour, IWeapon {
     LineRenderer laserRenderer;
     bool isFiring;
     Vector2 direction;
+    PlayerAim aim;
+    float maxDistance = 100f;
+    Coroutine firingCoroutine;
 
     // Use this for initialization
     void Start()
     {
+        aim = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerAim>();
+        if (aim == null)
+        {
+            throw new MissingComponentException("Could not find playeraim component");
+        }
         laserBeam = Instantiate(laserPrefab);
         laserBeam.SetActive(false);
         laserRenderer = laserBeam.GetComponent<LineRenderer>();
     }
 
-	// Update is called once per frame
-	void Update () {
-		
-	}
-
-    public void OnFirePressed ()
+    public void OnFirePressed()
     {
-        isFiring = true;
         // get aim direction from another component
+        laserBeam.SetActive(true);
+        firingCoroutine = StartCoroutine(FiringCoroutine());
+        Debug.Log("Start Fire!");
     }
 
-    public void OnFireReleased ()
+    public void OnFireReleased()
     {
-        isFiring = false;
+        laserBeam.SetActive(false);
+        StopCoroutine(firingCoroutine);
         Debug.Log("Stop Fire!");
+    }
+
+    IEnumerator FiringCoroutine()
+    {
+        while (true)
+        {
+            RaycastHit2D raycastHit = Physics2D.Raycast(transform.position, aim.currentDirection, maxDistance, hitLayers);
+            Vector2 origin = transform.position;
+            Vector2 destination;
+            if (raycastHit.collider != null)
+            {
+                destination = raycastHit.point;
+            }
+            else
+            {
+                destination = origin + aim.currentDirection * maxDistance;
+            }
+            laserRenderer.SetPositions(new Vector3[] { origin, destination });
+            yield return null;
+        }
     }
 }
