@@ -302,7 +302,7 @@ MonoBehaviour:
   secondsBetweenAttacks: 2
   aimSeconds: 0.75
   fireSeconds: 1
-  target: {fileID: 0}
+  target: {fileID: 1749873495395200, guid: 7c4cc9b08590ffd41b80f489008ac88e, type: 2}
   boltPrefab: {fileID: 1728356273462324, guid: 89c0ca3e51f103f4cb4ba181aa17c789, type: 2}
   boltAimPrefab: {fileID: 1822736947640550, guid: a3322240c2e0c1a4894255d887f208cd,
     type: 2}
@@ -333,7 +333,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 048db7b5ea20daa4581e16be79871b9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
+  target: {fileID: 1749873495395200, guid: 7c4cc9b08590ffd41b80f489008ac88e, type: 2}
   maxSpeed: 5
   acceleration: 10
 --- !u!212 &212332425213712120

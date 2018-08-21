@@ -18,9 +18,9 @@ TagManager:
   - Ground
   - Magnetic
   - BackgroundImage
-  - 
-  - 
-  - 
+  - Enemy
+  - Player
+  - RaycastEnd
   - 
   - 
   - 
@@ -42,4 +42,22 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Background
+    uniqueID: 1424541075
+    locked: 0
+  - name: Environment
+    uniqueID: 573074441
+    locked: 0
+  - name: Enemies
+    uniqueID: 483315827
+    locked: 0
+  - name: Bullets
+    uniqueID: 2981194093
+    locked: 0
+  - name: Player
+    uniqueID: 1104822613
+    locked: 0
+  - name: UI
+    uniqueID: 1956424587
     locked: 0
