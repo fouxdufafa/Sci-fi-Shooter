@@ -6,6 +6,7 @@ public class RayGun : MonoBehaviour, IWeapon {
 
     [SerializeField] GameObject laserPrefab;
     [SerializeField] LayerMask hitLayers;
+    [SerializeField] AudioClip laserSoundLoop;
     GameObject laserBeam;
     LineRenderer laserRenderer;
     bool isFiring;
@@ -13,6 +14,7 @@ public class RayGun : MonoBehaviour, IWeapon {
     PlayerAim aim;
     float maxDistance = 100f;
     Coroutine firingCoroutine;
+    AudioSource audioSource;
 
     // Use this for initialization
     void Start()
@@ -25,6 +27,10 @@ public class RayGun : MonoBehaviour, IWeapon {
         laserBeam = Instantiate(laserPrefab);
         laserBeam.SetActive(false);
         laserRenderer = laserBeam.GetComponent<LineRenderer>();
+
+        audioSource = GetComponent<AudioSource>();
+        audioSource.clip = laserSoundLoop;
+        audioSource.loop = true;
     }
 
     public void OnFirePressed()
@@ -33,12 +39,19 @@ public class RayGun : MonoBehaviour, IWeapon {
         laserBeam.SetActive(true);
         firingCoroutine = StartCoroutine(FiringCoroutine());
         Debug.Log("Start Fire!");
+        audioSource.Play();
     }
 
     public void OnFireReleased()
     {
         laserBeam.SetActive(false);
-        StopCoroutine(firingCoroutine);
+        if (firingCoroutine != null) 
+        {
+            // Safeguards the scenario in which weapon switch calls OnFireReleased without having ever fired this weapon
+            // Perhaps weapons should have an OnSelect and OnDeselect behavior in the interface instead
+            StopCoroutine(firingCoroutine);
+        }
+        audioSource.Stop();
         Debug.Log("Stop Fire!");
     }
 

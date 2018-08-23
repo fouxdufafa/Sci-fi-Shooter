@@ -14,7 +14,6 @@ public class Pistol : MonoBehaviour, IWeapon {
 
     public void OnFirePressed()
     {
-        Debug.Log(aim);
         Vector2 bulletVelocity = aim.currentDirection * bulletSpeed;
         GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.FromToRotation(Vector2.right, aim.currentDirection));
         bullet.GetComponent<Rigidbody2D>().velocity = aim.currentDirection * bulletSpeed;

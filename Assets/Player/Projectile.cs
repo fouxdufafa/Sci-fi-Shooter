@@ -9,21 +9,18 @@ public class Projectile : MonoBehaviour {
 
     private void Start()
     {
-        Destroy(gameObject, 1);
+        Destroy(gameObject, destroyAfterSeconds);
     }
 
     void OnTriggerEnter2D(Collider2D collider)
     {
-        
-        if (!collider.gameObject.CompareTag("Player"))
+        Debug.Log(collider.gameObject);
+        IDamageable damageable = collider.gameObject.GetComponent<IDamageable>();
+        if (damageable != null)
         {
-            IDamageable damageable = collider.gameObject.GetComponent<IDamageable>();
-            if (damageable != null)
-            {
-                Debug.Log("Hit an IDamageable");
-                damageable.TakeDamage(damage);
-            }
-            Destroy(gameObject);
+            Debug.Log("Hit an IDamageable");
+            damageable.TakeDamage(damage);
         }
+        Destroy(gameObject);
     }
 }
