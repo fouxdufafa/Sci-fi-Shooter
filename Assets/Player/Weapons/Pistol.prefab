@@ -137,3 +137,5 @@ MonoBehaviour:
   bulletSpeed: 100
   bulletDamage: 10
   bulletSound: {fileID: 8300000, guid: fc23b853445bd834f9551c5b928bcb8e, type: 3}
+  crosshairPrefab: {fileID: 1466853576276846, guid: 15835a701e51c174997616648f61ae9f,
+    type: 2}

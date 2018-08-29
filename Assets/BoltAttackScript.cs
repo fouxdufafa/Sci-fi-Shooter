@@ -5,6 +5,7 @@ using DigitalRuby.ThunderAndLightning;
 
 public class BoltAttackScript : MonoBehaviour {
 
+    [SerializeField] bool isActive = true;
     [SerializeField] float secondsBetweenAttacks = 3f;
     [SerializeField] float aimSeconds = 0.75f;
     [SerializeField] float fireSeconds = 1f;
@@ -43,12 +44,19 @@ public class BoltAttackScript : MonoBehaviour {
     {
         while (true)
         {
-            yield return new WaitForSeconds(secondsBetweenAttacks);
-            Aim();
-            yield return new WaitForSeconds(aimSeconds);
-            Fire();
-            yield return new WaitForSeconds(fireSeconds);
-            CeaseFire();
+            if (isActive)
+            {
+                yield return new WaitForSeconds(secondsBetweenAttacks);
+                Aim();
+                yield return new WaitForSeconds(aimSeconds);
+                Fire();
+                yield return new WaitForSeconds(fireSeconds);
+                CeaseFire();
+            }
+            else
+            {
+                yield return null;
+            }
         }
     }
 
@@ -94,6 +102,7 @@ public class BoltAttackScript : MonoBehaviour {
     {
         Destroy(zapBall);
         Destroy(zapBolt);
+        Destroy(aimTarget);
         audioSource.Stop();
         StopCoroutine(zapRoutine);
     }

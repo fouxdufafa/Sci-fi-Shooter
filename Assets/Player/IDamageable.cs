@@ -5,5 +5,5 @@ using UnityEngine;
 public interface IDamageable {
 
     // Use this for initialization
-    void TakeDamage(int amount);
+    void TakeDamage(float amount);
 }

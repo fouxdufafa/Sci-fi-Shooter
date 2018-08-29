@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class Health : MonoBehaviour, IDamageable {
 
-    [SerializeField] int maxHealth;
-    private int currentHealth;
+    [SerializeField] float maxHealth;
+    private float currentHealth;
 
-    public delegate void OnHealthChanged(int newAmount);
+    public delegate void OnHealthChanged(float newAmount);
     public event OnHealthChanged onHealthChangedObservers;
 
     public delegate void OnDie();
@@ -27,7 +27,7 @@ public class Health : MonoBehaviour, IDamageable {
         }
 	}
 
-    public void TakeDamage (int amount)
+    public void TakeDamage (float amount)
     {
         currentHealth = Mathf.Clamp(currentHealth - amount, 0, maxHealth);
         Debug.Log("Took " + amount + " damage, current health: " + currentHealth);
@@ -35,6 +35,7 @@ public class Health : MonoBehaviour, IDamageable {
         {
             if (onDieObservers != null)
             {
+                Debug.Log("Called OnDie for " + gameObject.name);
                 onDieObservers();
             }
         }

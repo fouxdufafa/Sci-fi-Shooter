@@ -8,6 +8,8 @@ public class PursuePlayerMovement : AbstractMovement {
     [SerializeField] GameObject target;
     [SerializeField] float maxSpeed = 5f;
     [SerializeField] float acceleration = 10f;
+    [SerializeField] bool rotate = false;
+    [SerializeField] float angularAcceleration = 10f;
 
     Rigidbody2D rb2d;
 
@@ -29,6 +31,12 @@ public class PursuePlayerMovement : AbstractMovement {
         if (rb2d.velocity.magnitude > maxSpeed)
         {
             rb2d.velocity = rb2d.velocity.normalized * maxSpeed;
+        }
+
+        if (rotate)
+        {
+            Vector2 fromTo = target.transform.position - transform.position;
+            transform.rotation = Quaternion.FromToRotation(Vector2.up, fromTo);
         }
     }
 }

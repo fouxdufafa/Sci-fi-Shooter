@@ -51,7 +51,10 @@ public class EnemyJelly : MonoBehaviour {
     void OnDie()
     {
         // Create death ball
+        Debug.Log("OnDie");
+        Debug.Log("Destroying " + gameObject.name);
         Instantiate(deathPrefab, transform.position, Quaternion.identity);
+        Debug.Log("Destroyed");
         Destroy(gameObject);
     }
 }

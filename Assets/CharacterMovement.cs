@@ -1,20 +1,22 @@
-using System;
-using System.Collections;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
-{
-    [SerializeField] private float maxSpeed = 10f;                    // The fastest the player can travel in the x axis.
-    [SerializeField] private float jumpForce = 400f;                  // Amount of force added when the player jumps.
+public class CharacterMovement : MonoBehaviour, IInputControllable {
+
+    public FixedUpdateCharacterInput InputController
+    {
+        get { return input; }
+        set { input = value; }
+    }
+    private FixedUpdateCharacterInput input;
+
+    public bool IsFacingRight { get { return isFacingRight; } }
+
+    [SerializeField] private float maxSpeed = 12f;                    // The fastest the player can travel in the x axis.
+    [SerializeField] private float jumpForce = 1300;                  // Amount of force added when the player jumps.
     [SerializeField] private LayerMask whatIsGround;                  // A mask determining what is ground to the character
     [SerializeField] float groundedRadius = .2f; // Radius of the overlap circle to determine if grounded
-
-    // Weapons
-    private AudioSource source;
-    WeaponSystem weaponSystem;
-    PlayerAim playerAim;
-    [SerializeField] AudioClip cycleWeaponSound;
-
 
     // Movement
     private bool isGrounded;
@@ -36,24 +38,19 @@ public class PlayerMovement : MonoBehaviour
     float lastRollTime = -1f;
     float rollDuration = 0.3f;
     float rollSpeed = 14f;
-    
+
     private void Awake()
     {
         // Setting up references.
         groundCheck = transform.Find("GroundCheck");
         animator = GetComponent<Animator>();
-        rb2d = GetComponent<Rigidbody2D>();
+        rb2d = GetComponentInParent<Rigidbody2D>();
         wallGrabCheck = transform.Find("WallGrabCheck").GetComponent<WallCheck>();
         wallJumpCheck = transform.Find("WallJumpCheck").GetComponent<WallCheck>();
         activeWall = null;
         gravityScale = rb2d.gravityScale; // save gravity scale
 
-        // Weapons
-        weaponSystem = GetComponent<WeaponSystem>();
-        playerAim = GetComponent<PlayerAim>();
-        source = GetComponent<AudioSource>();
-
-        joint = GetComponent<FixedJoint2D>();
+        joint = GetComponentInParent<FixedJoint2D>();
         joint.enabled = false;
     }
 
@@ -73,9 +70,11 @@ public class PlayerMovement : MonoBehaviour
 
         // Set the vertical animation
         animator.SetFloat("vSpeed", rb2d.velocity.y);
+
+        Move(input.Horizontal, input.Vertical, input.JumpDown, input.WallHug, input.Aim, input.RollDown);
     }
 
-    public void Move(float horizontal, float vertical, bool jumpPressed, TriggerState leftTrigger, float horizontalAim, float verticalAim, bool firePressed, bool fireReleased, bool rollPressed, bool cycleWeaponPressed)
+    public void Move(float horizontal, float vertical, bool jumpPressed, bool wallHug, bool aim, bool rollPressed)
     {
         bool isWallJumping = Time.fixedTime - lastWallJumpTime <= wallJumpDuration;
 
@@ -84,13 +83,7 @@ public class PlayerMovement : MonoBehaviour
 
         bool shouldRoll = rollPressed;
 
-        bool shouldFire = firePressed && !isRolling;
-
-        bool shouldStopFire = fireReleased;
-
-        bool shouldCycleWeapon = cycleWeaponPressed;
-
-        bool isAiming = (leftTrigger == TriggerState.Start || leftTrigger == TriggerState.Stay) && (isGrounded || activeWall) && !isRolling;
+        bool isAiming = aim && (isGrounded || activeWall) && !isRolling;
 
         bool shouldMove = !isAiming && !activeWall && !isWallJumping && !isRolling && !shouldRoll;
 
@@ -98,9 +91,9 @@ public class PlayerMovement : MonoBehaviour
 
         bool shouldWallJump = jumpPressed && wallJumpCheck.Contact != null && !isGrounded;
 
-        bool shouldStartHuggingWall = (!isGrounded && wallGrabCheck.Contact != null && !activeWall && (leftTrigger == TriggerState.Start || leftTrigger == TriggerState.Stay) && !isWallJumping && !isRolling);
+        bool shouldStartHuggingWall = (!isGrounded && wallGrabCheck.Contact != null && !activeWall && wallHug && !isWallJumping && !isRolling);
 
-        bool shouldReleaseWall = (activeWall && !((leftTrigger == TriggerState.Start || leftTrigger == TriggerState.Stay)) || shouldWallJump || shouldRoll);
+        bool shouldReleaseWall = (activeWall && !wallHug || shouldWallJump || shouldRoll);
 
 
         if (shouldStartHuggingWall)
@@ -121,33 +114,12 @@ public class PlayerMovement : MonoBehaviour
         // Handle aiming / crosshair rendering
         if (isAiming)
         {
-            playerAim.Aim(new Vector2(horizontalAim, verticalAim), true);
             if (isGrounded)
             {
                 // Prevent sliding while aiming
                 rb2d.velocity = new Vector2(0, rb2d.velocity.y);
                 animator.SetFloat("Speed", 0f);
             }
-        }
-        else
-        {
-            playerAim.Aim(isFacingRight ? Vector2.right : Vector2.left, false);
-        }
-
-        if (shouldFire)
-        {
-            weaponSystem.OnFirePressed();
-        }
-        
-        if (shouldStopFire)
-        {
-            weaponSystem.OnFireReleased();
-        }
-
-        if (shouldCycleWeapon)
-        {
-            weaponSystem.CycleWeapon();
-            GetComponent<AudioSource>().PlayOneShot(cycleWeaponSound);
         }
 
         if (shouldRoll)

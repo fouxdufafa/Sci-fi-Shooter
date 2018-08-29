@@ -9,14 +9,15 @@ public class Pistol : MonoBehaviour, IWeapon {
     [SerializeField] float bulletSpeed = 100f;
     [SerializeField] float bulletDamage;
     [SerializeField] AudioClip bulletSound;
-    PlayerAim aim;
+    [SerializeField] GameObject crosshairPrefab;
+    CharacterAim aim;
     AudioSource source;
 
     public void OnFirePressed()
     {
-        Vector2 bulletVelocity = aim.currentDirection * bulletSpeed;
-        GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.FromToRotation(Vector2.right, aim.currentDirection));
-        bullet.GetComponent<Rigidbody2D>().velocity = aim.currentDirection * bulletSpeed;
+        Vector2 bulletVelocity = aim.CurrentDirection * bulletSpeed;
+        GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.FromToRotation(Vector2.right, aim.CurrentDirection));
+        bullet.GetComponent<Rigidbody2D>().velocity = aim.CurrentDirection * bulletSpeed;
         source.PlayOneShot(bulletSound);
     }
 
@@ -27,10 +28,10 @@ public class Pistol : MonoBehaviour, IWeapon {
 
     // Use this for initialization
     void Start () {
-        aim = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerAim>();
+        aim = GameObject.FindGameObjectWithTag("Player").transform.parent.GetComponentInChildren<CharacterAim>();
         if (aim == null)
         {
-            throw new MissingComponentException("Could not find playeraim component");
+            throw new MissingComponentException("Could not find CharacterAim component");
         }
         else
         {

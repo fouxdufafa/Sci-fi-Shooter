@@ -17,7 +17,7 @@ public class PlayerDamage : MonoBehaviour, IDamageable {
 		
 	}
 
-    public void TakeDamage (int amount)
+    public void TakeDamage (float amount)
     {
         if (onTakeDamageObservers != null)
         {

@@ -29,12 +29,12 @@ public class JellyDeathEffect : MonoBehaviour {
 	// Update is called once per frame
 	IEnumerator FizzleOut ()
     {
-        while (true)
+        while (lightning.Radius > 0)
         {
-            Debug.Log("Lightning radius: " + lightning.Radius);
             lightning.Radius = Mathf.Max(lightning.Radius - dRadius, 0);
             lightning.InnerRadius = Mathf.Max(lightning.InnerRadius - dInnerRadius, 0);
             yield return new WaitForEndOfFrame();
         }
+        Destroy(gameObject);
     }
 }
