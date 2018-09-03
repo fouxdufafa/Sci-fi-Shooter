@@ -37,7 +37,13 @@ public class CharacterMovement : MonoBehaviour, IInputControllable {
     // Roll mechanics
     float lastRollTime = -1f;
     float rollDuration = 0.3f;
-    float rollSpeed = 14f;
+    [SerializeField] float rollSpeedMultiplier = 1.2f;
+
+    // Sounds
+    [SerializeField] AudioClip jumpSound;
+    [SerializeField] AudioClip rollSound;
+
+    AudioSource audioSource;
 
     private void Awake()
     {
@@ -52,6 +58,8 @@ public class CharacterMovement : MonoBehaviour, IInputControllable {
 
         joint = GetComponentInParent<FixedJoint2D>();
         joint.enabled = false;
+
+        audioSource = GetComponent<AudioSource>();
     }
 
     private void FixedUpdate()
@@ -128,7 +136,11 @@ public class CharacterMovement : MonoBehaviour, IInputControllable {
             isRolling = true;
             animator.SetBool("Roll", true);
             // set rolling velocity
-            rb2d.velocity = new Vector2(transform.localScale.x * rollSpeed, rb2d.velocity.y);
+            audioSource.PlayOneShot(rollSound);
+        }
+        if (isRolling)
+        {
+            rb2d.velocity = new Vector2(transform.localScale.x * maxSpeed * rollSpeedMultiplier, rb2d.velocity.y);
         }
 
         // Fire of a jump if we should
@@ -139,6 +151,7 @@ public class CharacterMovement : MonoBehaviour, IInputControllable {
             animator.SetBool("Ground", false);
             rb2d.velocity = new Vector2(rb2d.velocity.x, 0);
             rb2d.AddForce(new Vector2(0f, jumpForce));
+            audioSource.PlayOneShot(jumpSound);
         }
 
         if (shouldWallJump)
@@ -162,6 +175,8 @@ public class CharacterMovement : MonoBehaviour, IInputControllable {
             rb2d.AddForce(jumpDirection * jumpForce * 1.5f);
 
             lastWallJumpTime = Time.fixedTime;
+
+            audioSource.PlayOneShot(jumpSound);
         }
 
         // Handle movement.

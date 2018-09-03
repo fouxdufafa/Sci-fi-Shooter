@@ -10,7 +10,7 @@ public class EnemyJelly : MonoBehaviour {
     AbstractMovement movement;
     Animator animator;
     BoltAttackScript attackRoutine;
-    Health health;
+    Damageable health;
     AudioSource audioSource;
     int zapPrepare;
     int zapStart;
@@ -18,17 +18,17 @@ public class EnemyJelly : MonoBehaviour {
     
 	// Use this for initialization
 	void Start () {
-        health = GetComponent<Health>();
+        health = GetComponent<Damageable>();
         health.onDieObservers += OnDie;
         movement = GetComponent<AbstractMovement>();
         animator = GetComponent<Animator>();
-        attackRoutine = GetComponent<BoltAttackScript>();
-        attackRoutine.onAimObservers += OnAim;
-        attackRoutine.onFireObservers += OnFire;
-        attackRoutine.onCeaseFireObservers += OnCeaseFire;
-        zapPrepare = Animator.StringToHash("ZapPrepare");
-        zapStart = Animator.StringToHash("ZapStart");
-        zapEnd = Animator.StringToHash("ZapEnd");
+        //attackRoutine = GetComponent<BoltAttackScript>();
+        //attackRoutine.onAimObservers += OnAim;
+        //attackRoutine.onFireObservers += OnFire;
+        //attackRoutine.onCeaseFireObservers += OnCeaseFire;
+        //zapPrepare = Animator.StringToHash("ZapPrepare");
+        //zapStart = Animator.StringToHash("ZapStart");
+        //zapEnd = Animator.StringToHash("ZapEnd");
 	}
 
     void OnAim()

@@ -111,6 +111,22 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1658696469350918
+GameObject:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4513768679323704}
+  - component: {fileID: 114025629090405548}
+  m_Layer: 12
+  m_Name: WeaponSocket
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1724750481897194
 GameObject:
   m_ObjectHideFlags: 1
@@ -138,7 +154,7 @@ GameObject:
   - component: {fileID: 114286108387189530}
   - component: {fileID: 82996257873851056}
   m_Layer: 12
-  m_Name: Weapons
+  m_Name: AimAxis
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -199,6 +215,19 @@ Transform:
   m_Father: {fileID: 4789469096210908}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4513768679323704
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1658696469350918}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.5, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4588713858534812}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4533030213729224
 Transform:
   m_ObjectHideFlags: 1
@@ -221,7 +250,8 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 4513768679323704}
   m_Father: {fileID: 4737293114467322}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -232,7 +262,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1352499938079724}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.700289, y: -4.0218334, z: 0}
+  m_LocalPosition: {x: 49.3, y: 0.59, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4789469096210908}
@@ -533,6 +563,17 @@ Light:
   m_UseColorTemperature: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+--- !u!114 &114025629090405548
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1658696469350918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38996dd299b407a4cb94442489dc5a3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114133135571073556
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -560,12 +601,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fff1dcc801f429c429658a13d3d97fb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpeed: 12
+  maxSpeed: 16
   jumpForce: 1300
   whatIsGround:
     serializedVersion: 2
     m_Bits: 4294967295
   groundedRadius: 0.2
+  rollSpeedMultiplier: 1.2
 --- !u!114 &114286108387189530
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -592,7 +634,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be4315d6264ba6842a53f4d2d59df16c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxDegreesDelta: 30
+  maxDegreesDelta: 20
   crosshairPrefab: {fileID: 1466853576276846, guid: 15835a701e51c174997616648f61ae9f,
     type: 2}
   crosshairRadius: 5
@@ -681,6 +723,6 @@ FixedJoint2D:
   m_BreakTorque: Infinity
   m_AutoConfigureConnectedAnchor: 1
   m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: 7.700289, y: -4.0218334}
+  m_ConnectedAnchor: {x: 49.3, y: 0.59}
   m_DampingRatio: 0
   m_Frequency: 0

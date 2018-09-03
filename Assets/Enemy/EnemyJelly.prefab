@@ -24,10 +24,10 @@ GameObject:
   - component: {fileID: 50423267166371150}
   - component: {fileID: 70745036290230418}
   - component: {fileID: 114017187560231094}
-  - component: {fileID: 114995037974282986}
-  - component: {fileID: 114181177832679670}
   - component: {fileID: 114955090740589858}
   - component: {fileID: 82176071163804378}
+  - component: {fileID: 114320989735991594}
+  - component: {fileID: 114065462107859956}
   m_Layer: 0
   m_Name: EnemyJelly
   m_TagString: Untagged
@@ -73,7 +73,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1017495075376944}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.51, y: 13.42, z: -0.23046875}
+  m_LocalPosition: {x: 30.67, y: 11.31, z: -0.23046875}
   m_LocalScale: {x: 2.7293596, y: 2.6428938, z: 1}
   m_Children:
   - {fileID: 4197758279663602}
@@ -288,7 +288,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   deathPrefab: {fileID: 1500805752071730, guid: a06452a262f289f43b4fd54be006ab64,
     type: 2}
---- !u!114 &114181177832679670
+--- !u!114 &114065462107859956
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -296,21 +296,28 @@ MonoBehaviour:
   m_GameObject: {fileID: 1017495075376944}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cb1c2d17de7b0fe479e6a1ccb8fc25cd, type: 3}
+  m_Script: {fileID: 11500000, guid: 87a8028877ff78f449c4c26f3cca81d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isActive: 1
-  secondsBetweenAttacks: 2
-  aimSeconds: 0.75
-  fireSeconds: 1
+--- !u!114 &114320989735991594
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1017495075376944}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 764ca1f29098bd04abbb9a73b691f64d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   target: {fileID: 0}
-  boltPrefab: {fileID: 1728356273462324, guid: 89c0ca3e51f103f4cb4ba181aa17c789, type: 2}
-  boltAimPrefab: {fileID: 1822736947640550, guid: a3322240c2e0c1a4894255d887f208cd,
-    type: 2}
-  boltFirePrefab: {fileID: 1500805752071730, guid: 99245b5f1b336e3498ac7b34ff2882a2,
-    type: 2}
-  boltAimSound: {fileID: 8300000, guid: 18b11cd8276722742812815977a5bbbf, type: 3}
-  boltFireSound: {fileID: 8300000, guid: 8179007e61ea5d74bb6ad65899e2d75b, type: 3}
+  maxSpeed: 15
+  acceleration: 100
+  faceTarget: 0
+  knockbackDuration: 0.1
+  knockbackSpeed: 10
+  restoreOldVelocityAfterKnockback: 0
+  knockbackSound: {fileID: 0}
 --- !u!114 &114955090740589858
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -322,23 +329,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57665be8b7b3ca94d9dc42c00f466314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
---- !u!114 &114995037974282986
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1017495075376944}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 048db7b5ea20daa4581e16be79871b9b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  target: {fileID: 0}
-  maxSpeed: 5
-  acceleration: 10
-  rotate: 0
-  angularAcceleration: 10
+  maxHealth: 30
 --- !u!212 &212332425213712120
 SpriteRenderer:
   m_ObjectHideFlags: 1

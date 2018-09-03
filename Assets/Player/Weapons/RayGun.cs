@@ -68,8 +68,21 @@ public class RayGun : MonoBehaviour, IWeapon {
 
         while (true)
         {
-            RaycastHit2D raycastHit = Physics2D.Raycast(transform.position, aim.CurrentDirection, maxDistance, hitLayers);
-            Vector2 origin = transform.position;
+            currentDirection = aim.CurrentDirection;
+            Vector2.Lerp(previousDirection, currentDirection, 0.1f);
+
+            // Doesn't account for change in player position, but this should be negligible
+            float angleApprox = Vector2.Angle(previousDirection, currentDirection);
+            float numRaycasts = Mathf.RoundToInt(angleApprox / maxAngleBetweenRaycasts);
+
+            List<Ray2D> rays = new List<Ray2D>();
+            for (int i = 0; i < numRaycasts; i++)
+            {
+                Vector2 direction = Vector2.Lerp(previousDirection, currentDirection, i / (float) numRaycasts);
+            }
+
+            Vector2 origin = aim.WeaponSocket.transform.position;
+            RaycastHit2D raycastHit = Physics2D.Raycast(origin, aim.CurrentDirection, maxDistance, hitLayers);
             Vector2 destination;
             if (raycastHit.collider != null)
             {
@@ -81,6 +94,8 @@ public class RayGun : MonoBehaviour, IWeapon {
             }
             laserRenderer.SetPositions(new Vector3[] { origin, destination });
             damager.transform.position = destination;
+
+            previousDirection = currentDirection;
             yield return null;
         }
     }

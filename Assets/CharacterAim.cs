@@ -8,8 +8,12 @@ public class CharacterAim : MonoBehaviour {
     [SerializeField] GameObject crosshairPrefab;
     [SerializeField] float crosshairRadius = 5f;
 
-    public Vector2 CurrentDirection { get { return currentDirection;  } }
-    private Vector2 currentDirection;
+    [HideInInspector]
+    public Vector2 CurrentDirection { get; private set; }
+
+    [HideInInspector]
+    public Transform WeaponSocket { get; private set; }
+
     private Quaternion desiredRotation;
     private CharacterMovement movement;
     private WeaponSystem weaponSystem;
@@ -22,6 +26,7 @@ public class CharacterAim : MonoBehaviour {
         crosshair = Instantiate(crosshairPrefab, transform);
         crosshair.transform.localPosition = new Vector2(crosshairRadius, 0);
         crosshair.SetActive(false);
+        WeaponSocket = transform.Find("WeaponSocket");
     }
 
     // Update is called once per frame
@@ -38,12 +43,12 @@ public class CharacterAim : MonoBehaviour {
         {
             // Not aiming, set fire direction to forward
             transform.rotation = movement.IsFacingRight
-                ? Quaternion.RotateTowards(transform.rotation, Quaternion.identity, maxDegreesDelta)
-                : Quaternion.RotateTowards(transform.rotation, Quaternion.Euler(0, 0, 180), maxDegreesDelta);
+                ? Quaternion.RotateTowards(transform.rotation, Quaternion.identity, 180)
+                : Quaternion.RotateTowards(transform.rotation, Quaternion.Euler(0, 0, 180), 180);
 
             crosshair.SetActive(false);
         }
-        currentDirection = transform.right;
+        CurrentDirection = transform.right;
 	}
 
     void OnDrawGizmos ()

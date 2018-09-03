@@ -10,6 +10,7 @@ public class PursuePlayerMovement : AbstractMovement {
     [SerializeField] float acceleration = 10f;
     [SerializeField] bool rotate = false;
     [SerializeField] float angularAcceleration = 10f;
+    [SerializeField] float knockbackDuration = 0.2f;
 
     Rigidbody2D rb2d;
 
@@ -20,7 +21,7 @@ public class PursuePlayerMovement : AbstractMovement {
     }
 
     // Update is called once per frame
-    void Update () {
+    void FixedUpdate () {
         if (stopped) {
             rb2d.velocity = Vector2.zero; // TODO: make this a smooth stop
             return;
