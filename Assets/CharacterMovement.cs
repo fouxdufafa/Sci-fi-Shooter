@@ -79,6 +79,8 @@ public class CharacterMovement : MonoBehaviour, IInputControllable {
         // Set the vertical animation
         animator.SetFloat("vSpeed", rb2d.velocity.y);
 
+        Debug.Log("Input says jump is " + input.Jump);
+
         Move(input.Horizontal, input.Vertical, input.JumpDown, input.WallHug, input.Aim, input.RollDown);
     }
 
@@ -151,6 +153,7 @@ public class CharacterMovement : MonoBehaviour, IInputControllable {
             animator.SetBool("Ground", false);
             rb2d.velocity = new Vector2(rb2d.velocity.x, 0);
             rb2d.AddForce(new Vector2(0f, jumpForce));
+            
             audioSource.PlayOneShot(jumpSound);
         }
 

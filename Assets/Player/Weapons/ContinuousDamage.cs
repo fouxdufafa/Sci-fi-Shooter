@@ -27,8 +27,8 @@ public class ContinuousDamage : MonoBehaviour {
             if (damageable != null)
             {
                 damageable.TakeDamage(dps * Time.deltaTime);
+                Debug.Log("Damaged!");
             }
-            Debug.Log("Damaged!");
             yield return null;
         }
     }

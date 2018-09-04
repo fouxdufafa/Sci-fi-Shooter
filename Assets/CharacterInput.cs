@@ -100,6 +100,7 @@ public class FixedUpdateCharacterInput
         if (jump)
         {
             m_currentState.Jump = true;
+            Debug.Log("Set currentstate jump to true");
         }
 
         if (fire)
