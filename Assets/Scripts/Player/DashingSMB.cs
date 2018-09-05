@@ -6,6 +6,10 @@ public class DashingSMB : StateMachineBehavior
     RobotBoyCharacter character;
     Animator animator;
 
+    public bool IgnoreVerticalVelocity = false;
+
+    Coroutine waitForDash;
+
     // Use this for initialization
     void Start()
     {
@@ -17,14 +21,18 @@ public class DashingSMB : StateMachineBehavior
     {
         animator.SetBool("Roll", true);
         character.SetHorizontalVelocity(character.MaxHorizontalSpeed * character.DashSpeedMultiplier * Mathf.Sign(transform.localScale.x));
-        StartCoroutine(WaitForDashComplete(sm));
+        if (IgnoreVerticalVelocity)
+        {
+            character.SetVerticalVelocity(0);
+        }
+        waitForDash = StartCoroutine(WaitForDashComplete(sm));
     }
 
     // Update is called once per frame
     public override void OnUpdate(StateMachine sm)
     {
         character.Move();
-        if (!character.IsGrounded())
+        if (!character.IsGrounded() && !IgnoreVerticalVelocity)
         {
             character.ApplyGravity();
         }

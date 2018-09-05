@@ -22,7 +22,7 @@ public class StateMachine: MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log("Updating " + currentState);
+        //Debug.Log("Updating " + currentState);
         currentState.OnUpdate(this);
     }
 

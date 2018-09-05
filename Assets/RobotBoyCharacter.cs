@@ -14,8 +14,6 @@ public class RobotBoyCharacter : MonoBehaviour {
     CharacterController2D character;
     Vector2 currentVelocity;
 
-    bool isFacingRight = true;
-
 	// Use this for initialization
 	void Start () {
         character = GetComponent<CharacterController2D>();
@@ -25,6 +23,11 @@ public class RobotBoyCharacter : MonoBehaviour {
     public void Move()
     {
         character.move(currentVelocity * Time.deltaTime);
+    }
+
+    public void Jump()
+    {
+        SetVerticalVelocity(JumpSpeed);
     }
 
     public void FaceTowardsVelocity()
@@ -39,6 +42,20 @@ public class RobotBoyCharacter : MonoBehaviour {
         }
     }
 
+    public void FaceTowards(Vector2 direction)
+    {
+        Vector3 scale = transform.localScale;
+        scale.x = Mathf.Sign(direction.x) * scale.x;
+        transform.localScale = scale;
+    }
+
+    public void FaceTowards(float xDirection)
+    {
+        Vector3 scale = transform.localScale;
+        scale.x = Mathf.Sign(xDirection) * Mathf.Abs(scale.x);
+        transform.localScale = scale;
+    }
+
     public void FaceLeft()
     {
         Vector3 scale = transform.localScale;
@@ -51,6 +68,11 @@ public class RobotBoyCharacter : MonoBehaviour {
         Vector3 scale = transform.localScale;
         scale.x = Mathf.Abs(scale.x);
         transform.localScale = scale;
+    }
+
+    public Vector2 GetFacing()
+    {
+        return transform.localScale.x > 0 ? Vector2.right : Vector2.left;
     }
 
     public bool IsGrounded()

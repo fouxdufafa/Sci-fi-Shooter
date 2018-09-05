@@ -34,11 +34,10 @@ public class WallCheck : MonoBehaviour {
     }
 
     // Adjacent wall, if any
-    private WallContact contact = null;
-    public WallContact Contact { get { return contact; }}
+    public WallContact Contact { get; private set; }
 	
 	// Update is called once per frame
-	void FixedUpdate ()
+	void Update ()
     {
         RaycastHit2D[] hits;
         switch (mode)
@@ -57,11 +56,11 @@ public class WallCheck : MonoBehaviour {
         
         if (hits.Length > 0)
         {
-            contact = new WallContact(hits[0].collider.gameObject, gameObject, hits[0].point);
+            Contact = new WallContact(hits[0].collider.gameObject, gameObject, hits[0].point);
         }
         else
         {
-            contact = null;
+            Contact = null;
         }
 	}
 }

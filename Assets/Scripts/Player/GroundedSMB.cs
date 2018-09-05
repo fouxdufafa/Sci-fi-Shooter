@@ -4,11 +4,13 @@ using System.Collections;
 public class GroundedSMB : StateMachineBehavior
 {
     RobotBoyCharacter character;
+    PlayerInput input;
     Animator animator;
 
     public void Start()
     {
         character = GetComponent<RobotBoyCharacter>();
+        input = GetComponent<PlayerInput>();
         animator = GetComponentInChildren<Animator>();
     }
 
@@ -16,6 +18,14 @@ public class GroundedSMB : StateMachineBehavior
     {
         character.SetVerticalVelocity(0f);
         animator.SetBool("Ground", true);
+
+        // TODO: Instead of catching this in OnEnter, use a buffered input manager
+        // so as not to miss button down events during state transitions
+        if (input.Dash.Down)
+        {
+            sm.TransitionTo<DashingSMB>();
+            return;
+        }
     }
 
     // Update is called once per frame
@@ -30,18 +40,18 @@ public class GroundedSMB : StateMachineBehavior
 
         if (!character.IsGrounded())
         {
-            sm.TransitionTo<AirborneSMB>();
+            sm.TransitionTo<AirborneSMB>(); 
             return;
         }
 
-        if (Input.GetButtonDown("Jump"))
+        if (input.Jump.Down)
         {
-            character.SetVerticalVelocity(20f);
+            character.Jump();
             sm.TransitionTo<AirborneSMB>();
             return;
         }
 
-        if (Input.GetButtonDown("Roll"))
+        if (input.Dash.Down)
         {
             sm.TransitionTo<DashingSMB>();
             return;
