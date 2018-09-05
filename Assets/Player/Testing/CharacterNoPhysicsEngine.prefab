@@ -26,6 +26,7 @@ GameObject:
   - component: {fileID: 114130374834324264}
   - component: {fileID: 114393148819864338}
   - component: {fileID: 114229703302563916}
+  - component: {fileID: 114497140503005320}
   m_Layer: 12
   m_Name: CharacterNoPhysicsEngine
   m_TagString: Untagged
@@ -641,7 +642,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a55236d8c2451c498d08ca738ac0621, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gravity: {x: 0, y: -40}
+  Gravity: {x: 0, y: -40}
+  MaxHorizontalSpeed: 15
+  DashSpeedMultiplier: 1.2
+  DashDuration: 0.3
+  JumpSpeed: 20
 --- !u!114 &114370876293212200
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -719,6 +724,18 @@ MonoBehaviour:
     m_RotationOrder: 4
   totalHorizontalRays: 8
   totalVerticalRays: 4
+--- !u!114 &114497140503005320
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1032298630864846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da731e8a484e47c4ba4cf80022056c01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  IsStartBehavior: 0
 --- !u!114 &114741298786619716
 MonoBehaviour:
   m_ObjectHideFlags: 1

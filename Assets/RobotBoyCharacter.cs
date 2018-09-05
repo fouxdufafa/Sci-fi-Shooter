@@ -5,7 +5,11 @@ using Prime31;
 
 public class RobotBoyCharacter : MonoBehaviour {
 
-    public Vector2 gravity;
+    public Vector2 Gravity = new Vector2(0, -40f);
+    public float MaxHorizontalSpeed = 15f;
+    public float DashSpeedMultiplier = 1.2f;
+    public float DashDuration = 0.3f;
+    public float JumpSpeed = 20f;
 
     CharacterController2D character;
     Vector2 currentVelocity;
@@ -57,7 +61,7 @@ public class RobotBoyCharacter : MonoBehaviour {
 
     public void ApplyGravity()
     {
-        currentVelocity += gravity * Time.deltaTime;
+        currentVelocity += Gravity * Time.deltaTime;
     }
 
     public void SetVelocity(Vector2 velocity)
