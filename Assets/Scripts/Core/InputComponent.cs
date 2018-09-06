@@ -39,7 +39,15 @@ public abstract class InputComponent : MonoBehaviour
         RightTrigger
     }
 
-    public class InputButton
+    public interface IButtonInput
+    {
+        bool Down { get; }
+        bool Up { get; }
+        bool Held { get; }
+        void Read();
+    }
+
+    public class InputButton : IButtonInput
     {
         public XboxControllerButton controllerButton;
         public bool Down { get; protected set; }
@@ -91,7 +99,7 @@ public abstract class InputComponent : MonoBehaviour
         }
     }
 
-    public class BufferedInputButton
+    public class BufferedInputButton : IButtonInput
     {
         InputButton input;
         int frames;
@@ -129,19 +137,28 @@ public abstract class InputComponent : MonoBehaviour
             }
         }
 
-        public bool Down(int frameTolerance = 3)
+        public bool Down { get { return input.Down; } }
+        public bool Up { get { return input.Up; } }
+        public bool Held { get { return input.Held; } }
+
+        public bool DownBuffered(int frameTolerance = 3)
         {
-            return buffer.Take(frameTolerance).Any((buttonState) => buttonState.Down);
+            return LastNFrames(buffer, frameTolerance).Any((buttonState) => buttonState.Down);
         }
 
-        public bool Up(int frameTolerance = 3)
+        public bool UpBuffered(int frameTolerance = 3)
         {
-            return buffer.Take(frameTolerance).Any((buttonState) => buttonState.Up);
+            return LastNFrames(buffer, frameTolerance).Any((buttonState) => buttonState.Up);
         }
 
-        public bool Held(int frameTolerance = 3)
+        public bool HeldBuffered(int frameTolerance = 3)
         {
-            return buffer.Take(frameTolerance).Any((buttonState) => buttonState.Held);
+            return LastNFrames(buffer, frameTolerance).Any((buttonState) => buttonState.Held);
+        }
+
+        private IEnumerable<ButtonState> LastNFrames(CircularBuffer<ButtonState> buffer, int frames)
+        {
+            return buffer.Skip(Mathf.Max(0, buffer.Count - frames));
         }
     }
 

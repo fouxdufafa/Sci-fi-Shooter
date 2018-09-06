@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class PlayerInput : InputComponent
 {
-    public InputButton Jump = new InputButton(XboxControllerButton.A);
+    public BufferedInputButton Jump = new BufferedInputButton(new InputButton(XboxControllerButton.A), 20);
     public InputButton Dash = new InputButton(XboxControllerButton.B);
     public InputButton Fire = new InputButton(XboxControllerButton.X);
     public InputButton CycleWeapon = new InputButton(XboxControllerButton.Y);
