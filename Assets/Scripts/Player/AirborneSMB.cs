@@ -13,7 +13,7 @@ public class AirborneSMB : StateMachineBehavior
     {
         character = GetComponent<RobotBoyCharacter>();
         input = GetComponent<PlayerInput>();
-        animator = GetComponentInChildren<Animator>();
+        animator = GetComponent<Animator>();
         wallHugCheck = GetComponentInChildren<WallCheck>();
     }
 

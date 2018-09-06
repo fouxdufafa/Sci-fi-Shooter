@@ -13,10 +13,13 @@ public class RobotBoyCharacter : MonoBehaviour {
 
     CharacterController2D character;
     Vector2 currentVelocity;
+    Vector2 aimDirection;
+    WeaponSystemV2 weaponSystem;
 
 	// Use this for initialization
 	void Start () {
         character = GetComponent<CharacterController2D>();
+        weaponSystem = GetComponent<WeaponSystemV2>();
         currentVelocity = Vector2.zero;
 	}
 
@@ -99,5 +102,30 @@ public class RobotBoyCharacter : MonoBehaviour {
     public void SetHorizontalVelocity(float v)
     {
         currentVelocity.x = v;
+    }
+
+    public void SetAimDirection(Vector2 direction)
+    {
+        weaponSystem.SetAimDirection(direction);
+    }
+
+    public void EnableCrosshair()
+    {
+        weaponSystem.EnableCrosshair();
+    }
+
+    public void DisableCrosshair()
+    {
+        weaponSystem.DisableCrosshair();
+    }
+
+    public void FireWeapon()
+    {
+        weaponSystem.OnFirePressed();
+    }
+
+    public void ReleaseWeapon()
+    {
+        weaponSystem.OnFireReleased();
     }
 }

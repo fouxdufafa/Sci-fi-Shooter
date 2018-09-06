@@ -28,15 +28,15 @@ public class Pistol : MonoBehaviour, IWeapon {
 
     // Use this for initialization
     void Start () {
-        aim = GameObject.FindGameObjectWithTag("Player").transform.parent.GetComponentInChildren<CharacterAim>();
-        if (aim == null)
-        {
-            throw new MissingComponentException("Could not find CharacterAim component");
-        }
-        else
-        {
-            Debug.Log("Playeraim is not null");
-        }
+        //aim = GameObject.FindGameObjectWithTag("Player").transform.parent.GetComponentInChildren<CharacterAim>();
+        //if (aim == null)
+        //{
+        //    throw new MissingComponentException("Could not find CharacterAim component");
+        //}
+        //else
+        //{
+        //    Debug.Log("Playeraim is not null");
+        //}
         source = GetComponent<AudioSource>();
 	}
 }

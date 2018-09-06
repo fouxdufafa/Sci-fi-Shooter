@@ -56,5 +56,11 @@ public class GroundedSMB : StateMachineBehavior
             sm.TransitionTo<DashingSMB>();
             return;
         }
+
+        if (input.Aim.Value == 1)
+        {
+            sm.TransitionTo<GroundedAimSMB>();
+            return;
+        }
     }
 }

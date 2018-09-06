@@ -79,6 +79,7 @@ public abstract class InputComponent : MonoBehaviour
     {
         public XboxControllerAxis controllerAxis;
         public float Value;
+        float deadZone;
 
         protected static readonly Dictionary<int, string> axesToName = new Dictionary<int, string>
         {
@@ -88,14 +89,19 @@ public abstract class InputComponent : MonoBehaviour
             {(int)XboxControllerAxis.RightTrigger, "Right Trigger" },
         };
 
-        public InputAxis(XboxControllerAxis controllerAxis)
+        public InputAxis(XboxControllerAxis controllerAxis, float deadZone = 0f)
         {
             this.controllerAxis = controllerAxis;
+            this.deadZone = deadZone;
         }
 
         public void Read()
         {
             Value = Input.GetAxis(axesToName[(int)controllerAxis]);
+            if (Mathf.Abs(Value) < deadZone)
+            {
+                Value = 0f;
+            }
         }
     }
 
