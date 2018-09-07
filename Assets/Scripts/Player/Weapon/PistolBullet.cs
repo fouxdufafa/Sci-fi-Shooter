@@ -4,11 +4,19 @@ using System.Collections;
 public class PistolBullet : MonoBehaviour
 {
     public float damage = 10f;
+    public float destroyAfterSeconds = 1f;
+
+    Coroutine destroyRoutine;
+
+    private void Start()
+    {
+        Destroy(gameObject, destroyAfterSeconds);
+    }
     private void OnTriggerEnter2D(Collider2D collision)
     {
         Debug.Log("Bullet hit trigger collider");
         Damageable damageable = collision.gameObject.GetComponent<Damageable>();
-        if (damageable != null)
+        if (damageable != null) 
         {
             Debug.Log("Hit an IDamageable");
             damageable.TakeDamage(damage);
