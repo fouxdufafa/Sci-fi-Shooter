@@ -29,9 +29,9 @@ public class GroundedAimSMB : StateMachineBehavior
     {
         float horizontal = input.HorizontalAim.Value;
         float vertical = input.VerticalAim.Value;
-        character.SetAimDirection(new Vector2(horizontal, vertical));
         character.FaceTowards(horizontal);
-        
+        character.SetAimDirection(new Vector2(horizontal, vertical));
+
         if (input.Fire.Down)
         {
             character.FireWeapon();
@@ -64,7 +64,7 @@ public class GroundedAimSMB : StateMachineBehavior
 
     public override void OnExit(StateMachine sm)
     {
-        character.ReleaseWeapon();
         character.DisableCrosshair();
+        character.SetAimDirection(character.GetFacing());
     }
 }

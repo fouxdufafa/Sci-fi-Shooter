@@ -10,14 +10,14 @@ public class Pistol : MonoBehaviour, IWeapon {
     [SerializeField] float bulletDamage;
     [SerializeField] AudioClip bulletSound;
     [SerializeField] GameObject crosshairPrefab;
-    CharacterAim aim;
+    WeaponSystemV2 weaponSystem;
     AudioSource source;
 
     public void OnFirePressed()
     {
-        Vector2 bulletVelocity = aim.CurrentDirection * bulletSpeed;
-        GameObject bullet = Instantiate(bulletPrefab, aim.WeaponSocket.transform.position, aim.transform.rotation);
-        bullet.GetComponent<Rigidbody2D>().velocity = aim.CurrentDirection * bulletSpeed;
+        Vector2 bulletVelocity = weaponSystem.AimDirection * bulletSpeed;
+        GameObject bullet = Instantiate(bulletPrefab, weaponSystem.WeaponSocket.position, weaponSystem.AimAxis.rotation);
+        bullet.GetComponent<Rigidbody2D>().velocity = weaponSystem.AimDirection.normalized * bulletSpeed;
         source.PlayOneShot(bulletSound);
     }
 
@@ -37,6 +37,7 @@ public class Pistol : MonoBehaviour, IWeapon {
         //{
         //    Debug.Log("Playeraim is not null");
         //}
+        weaponSystem = GameObject.FindObjectOfType<RobotBoyCharacter>().GetComponent<WeaponSystemV2>();
         source = GetComponent<AudioSource>();
 	}
 }

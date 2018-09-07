@@ -35,6 +35,7 @@ public class GroundedSMB : StateMachineBehavior
         character.SetHorizontalVelocity(velocity);
         character.FaceTowardsVelocity();
         character.Move();
+        character.SetAimDirection(character.GetFacing(), true);
 
         animator.SetFloat("Speed", Mathf.Abs(velocity));
 
@@ -42,6 +43,21 @@ public class GroundedSMB : StateMachineBehavior
         {
             sm.TransitionTo<AirborneSMB>(); 
             return;
+        }
+
+        if (input.Fire.Down)
+        {
+            character.FireWeapon();
+        }
+
+        if (input.Fire.Up)
+        {
+            character.ReleaseWeapon();
+        }
+
+        if (input.CycleWeapon.Down)
+        {
+            character.CycleWeapon();
         }
 
         if (input.Jump.Down)

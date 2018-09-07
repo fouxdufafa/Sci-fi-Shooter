@@ -21,6 +21,11 @@ public class WallHugSMB : StateMachineBehavior
     {
         character.SetVerticalVelocity(0);
         activeWall = wallCheck.Contact;
+
+        float horizontal = input.HorizontalAim.Value;
+        float vertical = input.VerticalAim.Value;
+        character.SetAimDirection(new Vector2(horizontal, vertical));
+        character.EnableCrosshair();
     }
 
     // Update is called once per frame
@@ -29,6 +34,20 @@ public class WallHugSMB : StateMachineBehavior
         // handle facing from joystick
         // check for state exits - trigger release, roll, etc
         character.FaceTowards(Input.GetAxis("Horizontal"));
+
+        float horizontal = input.HorizontalAim.Value;
+        float vertical = input.VerticalAim.Value;
+        character.SetAimDirection(new Vector2(horizontal, vertical));
+
+        if (input.Fire.Down)
+        {
+            character.FireWeapon();
+        }
+
+        if (input.Fire.Up)
+        {
+            character.ReleaseWeapon();
+        }
 
         if (input.WallHug.Value == 0)
         {
@@ -46,5 +65,11 @@ public class WallHugSMB : StateMachineBehavior
             sm.TransitionTo<DashingSMB>();
             return;
         }
+    }
+
+    public override void OnExit(StateMachine sm)
+    {
+        character.SetAimDirection(transform.forward);
+        character.DisableCrosshair();
     }
 }

@@ -37,6 +37,17 @@ public class AirborneSMB : StateMachineBehavior
         character.SetHorizontalVelocity(character.MaxHorizontalSpeed * Input.GetAxis("Horizontal"));
         character.FaceTowardsVelocity();
         character.Move();
+        character.SetAimDirection(character.GetFacing(), true);
+
+        if (input.Fire.Down)
+        {
+            character.FireWeapon();
+        }
+
+        if (input.Fire.Up)
+        {
+            character.ReleaseWeapon();
+        }
 
         if (character.IsGrounded())
         {

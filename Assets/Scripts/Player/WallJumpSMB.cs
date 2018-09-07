@@ -4,6 +4,7 @@ using System.Collections;
 public class WallJumpSMB : StateMachineBehavior
 {
     RobotBoyCharacter character;
+    PlayerInput input;
     WallCheck wallCheck;
 
     public float WallJumpDuration = 0.1f;
@@ -13,6 +14,7 @@ public class WallJumpSMB : StateMachineBehavior
     void Start()
     {
         character = GetComponent<RobotBoyCharacter>();
+        input = GetComponent<PlayerInput>();
         wallCheck = GetComponentInChildren<WallCheck>();
     }
 
@@ -41,6 +43,16 @@ public class WallJumpSMB : StateMachineBehavior
     public override void OnUpdate(StateMachine sm)
     {
         character.Move();
+
+        if (input.Fire.Down)
+        {
+            character.FireWeapon();
+        }
+
+        if (input.Fire.Up)
+        {
+            character.ReleaseWeapon();
+        }
     }
 
     IEnumerator WaitForJumpComplete(StateMachine sm)

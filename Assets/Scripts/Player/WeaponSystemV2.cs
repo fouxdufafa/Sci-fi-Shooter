@@ -20,11 +20,11 @@ public class WeaponSystemV2 : MonoBehaviour
     public IWeapon ActiveWeapon { get; protected set; }
 
     [HideInInspector]
-    public Vector2 AimDirection;
+    public Vector2 AimDirection { get { return AimAxis.right;  } }
 
     GameObject crosshair;
-    Transform AimAxis;
-    Transform WeaponSocket;
+    public Transform AimAxis { get; protected set; }
+    public Transform WeaponSocket { get; protected set; }
 
     private void Start()
     {
@@ -32,8 +32,8 @@ public class WeaponSystemV2 : MonoBehaviour
 
         // Aim axis
         GameObject axis = new GameObject("AimAxis");
-        axis.transform.parent = transform;
-        axis.transform.localPosition = Vector2.zero;
+        //axis.transform.parent = transform;
+        //axis.transform.localPosition = Vector2.zero;
         AimAxis = axis.transform;
 
         // Crosshair
@@ -87,13 +87,19 @@ public class WeaponSystemV2 : MonoBehaviour
         }
     }
 
-    public void SetAimDirection(Vector2 direction)
+    public void UpdateTransform(Transform t)
+    {
+        Debug.Log("Updated transform to " + t.position);
+        AimAxis.transform.position = t.position;
+    }
+
+    public void SetAimDirection(Vector2 direction, bool ignoreMaxRotation = false)
     {
         // TODO: Lerp this
-        AimAxis.localScale = new Vector3(Mathf.Abs(AimAxis.localScale.x) * Mathf.Sign(transform.localScale.x), AimAxis.localScale.y, AimAxis.localScale.z);
+        //AimAxis.localScale = new Vector3(Mathf.Abs(AimAxis.localScale.x) * Mathf.Sign(transform.localScale.x), AimAxis.localScale.y, AimAxis.localScale.z);
         float angle = Mathf.Rad2Deg * Mathf.Atan2(direction.y, direction.x);
         Quaternion desiredRotation = Quaternion.Euler(0, 0, angle);
-        AimAxis.rotation = Quaternion.RotateTowards(AimAxis.rotation, desiredRotation, 360);
+        AimAxis.rotation = Quaternion.RotateTowards(AimAxis.rotation, desiredRotation, ignoreMaxRotation ? 360 : maxDegreesDelta);
     }
 
     public void EnableCrosshair()

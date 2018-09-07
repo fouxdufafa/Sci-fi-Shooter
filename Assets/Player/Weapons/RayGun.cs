@@ -13,7 +13,7 @@ public class RayGun : MonoBehaviour, IWeapon {
     GameObject laserBeam;
     LineRenderer laserRenderer;
     bool isFiring;
-    CharacterAim aim;
+    WeaponSystemV2 weaponSystem;
     float maxDistance = 100f;
     Coroutine firingCoroutine;
     AudioSource audioSource;
@@ -22,10 +22,10 @@ public class RayGun : MonoBehaviour, IWeapon {
     // Use this for initialization
     void Start()
     {
-        aim = GameObject.FindGameObjectWithTag("Player").transform.parent.GetComponentInChildren<CharacterAim>();
-        if (aim == null)
+        weaponSystem = FindObjectOfType<WeaponSystemV2>();
+        if (weaponSystem == null)
         {
-            throw new MissingComponentException("Could not find playeraim component");
+            throw new MissingComponentException("Could not find WeaponSystem component");
         }
         laserBeam = Instantiate(laserPrefab);
         laserBeam.SetActive(false);
@@ -63,12 +63,12 @@ public class RayGun : MonoBehaviour, IWeapon {
 
     IEnumerator FiringCoroutine()
     {
-        Vector2 currentDirection = aim.CurrentDirection;
-        Vector2 previousDirection = aim.CurrentDirection;
+        Vector2 currentDirection = weaponSystem.AimDirection;
+        Vector2 previousDirection = weaponSystem.AimDirection;
 
         while (true)
         {
-            currentDirection = aim.CurrentDirection;
+            currentDirection = weaponSystem.AimDirection;
             Vector2.Lerp(previousDirection, currentDirection, 0.1f);
 
             // Doesn't account for change in player position, but this should be negligible
@@ -81,8 +81,8 @@ public class RayGun : MonoBehaviour, IWeapon {
                 Vector2 direction = Vector2.Lerp(previousDirection, currentDirection, i / (float) numRaycasts);
             }
 
-            Vector2 origin = aim.WeaponSocket.transform.position;
-            RaycastHit2D raycastHit = Physics2D.Raycast(origin, aim.CurrentDirection, maxDistance, hitLayers);
+            Vector2 origin = weaponSystem.WeaponSocket.position;
+            RaycastHit2D raycastHit = Physics2D.Raycast(origin, weaponSystem.AimDirection, maxDistance, hitLayers);
             Vector2 destination;
             if (raycastHit.collider != null)
             {
@@ -90,7 +90,7 @@ public class RayGun : MonoBehaviour, IWeapon {
             }
             else
             {
-                destination = origin + aim.CurrentDirection * maxDistance;
+                destination = origin + weaponSystem.AimDirection * maxDistance;
             }
             laserRenderer.SetPositions(new Vector3[] { origin, destination });
             damager.transform.position = destination;

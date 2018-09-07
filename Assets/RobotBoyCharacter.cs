@@ -26,6 +26,7 @@ public class RobotBoyCharacter : MonoBehaviour {
     public void Move()
     {
         character.move(currentVelocity * Time.deltaTime);
+        UpdateWeaponsTransform();
     }
 
     public void Jump()
@@ -104,9 +105,9 @@ public class RobotBoyCharacter : MonoBehaviour {
         currentVelocity.x = v;
     }
 
-    public void SetAimDirection(Vector2 direction)
+    public void SetAimDirection(Vector2 direction, bool ignoreMaxDelta = false)
     {
-        weaponSystem.SetAimDirection(direction);
+        weaponSystem.SetAimDirection(direction, ignoreMaxDelta);
     }
 
     public void EnableCrosshair()
@@ -127,5 +128,20 @@ public class RobotBoyCharacter : MonoBehaviour {
     public void ReleaseWeapon()
     {
         weaponSystem.OnFireReleased();
+    }
+
+    public void CycleWeapon()
+    {
+        weaponSystem.CycleWeapon();
+    }
+
+    public void UpdateWeaponsTransform()
+    {
+        weaponSystem.UpdateTransform(transform);
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawLine(transform.position, (Vector2) transform.position + weaponSystem.AimDirection);
     }
 }

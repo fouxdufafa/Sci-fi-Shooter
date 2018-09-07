@@ -33,6 +33,8 @@ GameObject:
   - component: {fileID: 114860773682909272}
   - component: {fileID: 114510628345959290}
   - component: {fileID: 114036631150519306}
+  - component: {fileID: 114415613832964498}
+  - component: {fileID: 114112507656704936}
   m_Layer: 12
   m_Name: CharacterNoPhysicsEngine
   m_TagString: Player
@@ -138,7 +140,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1043207880083632}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.59, z: 0}
+  m_LocalPosition: {x: 0, y: -0.5900001, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4078829694136366}
@@ -195,7 +197,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1625044403966560}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.46, z: 0}
+  m_LocalPosition: {x: 0, y: 0.4600001, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4078829694136366}
@@ -406,6 +408,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb5f77c9ede41eb4a917c1e73042207b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114112507656704936
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1032298630864846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd308ece6fdce95408ce63c2b7be5863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  IsStartBehavior: 0
 --- !u!114 &114130374834324264
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -458,6 +472,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsStartBehavior: 1
+--- !u!114 &114415613832964498
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1032298630864846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf7c48d29076ffe48be8fdc87b3a3557, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cycleWeaponSound: {fileID: 8300000, guid: 70a60fc3e21510641aa984acb4a73200, type: 3}
+  initialWeapons:
+  - {fileID: 1158809679139370, guid: 3542d6832a967b144bccc772676716b7, type: 2}
+  - {fileID: 1008949246840404, guid: 7ccf9f9b0ef24464b975299ae37cebe3, type: 2}
+  maxDegreesDelta: 30
+  crosshairPrefab: {fileID: 1466853576276846, guid: 15835a701e51c174997616648f61ae9f,
+    type: 2}
+  crosshairRadius: 5
+  weaponSocketRadius: 1
 --- !u!114 &114484314249995002
 MonoBehaviour:
   m_ObjectHideFlags: 1
