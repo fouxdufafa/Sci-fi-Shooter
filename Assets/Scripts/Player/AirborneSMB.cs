@@ -49,6 +49,11 @@ public class AirborneSMB : StateMachineBehavior
             character.ReleaseWeapon();
         }
 
+        if (input.CycleWeapon.Down)
+        {
+            character.CycleWeapon();
+        }
+
         if (character.IsGrounded())
         {
             sm.TransitionTo<GroundedSMB>();

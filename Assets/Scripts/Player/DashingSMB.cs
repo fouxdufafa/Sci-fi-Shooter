@@ -5,6 +5,7 @@ public class DashingSMB : StateMachineBehavior
 {
     RobotBoyCharacter character;
     Animator animator;
+    PlayerInput input;
 
     public bool IgnoreVerticalVelocity = false;
 
@@ -14,7 +15,8 @@ public class DashingSMB : StateMachineBehavior
     void Start()
     {
         character = GetComponent<RobotBoyCharacter>();
-        animator = GetComponentInChildren<Animator>();
+        animator = GetComponent<Animator>();
+        input = GetComponent<PlayerInput>();
     }
 
     public override void OnEnter(StateMachine sm)
@@ -35,6 +37,10 @@ public class DashingSMB : StateMachineBehavior
         if (!character.IsGrounded() && !IgnoreVerticalVelocity)
         {
             character.ApplyGravity();
+        }
+        if (input.CycleWeapon.Down)
+        {
+            character.CycleWeapon();
         }
     }
 

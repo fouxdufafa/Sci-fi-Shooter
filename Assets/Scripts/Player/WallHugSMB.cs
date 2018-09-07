@@ -49,6 +49,11 @@ public class WallHugSMB : StateMachineBehavior
             character.ReleaseWeapon();
         }
 
+        if (input.CycleWeapon.Down)
+        {
+            character.CycleWeapon();
+        }
+
         if (input.WallHug.Value == 0)
         {
             // Release wall

@@ -7,9 +7,6 @@ public class WallJumpSMB : StateMachineBehavior
     PlayerInput input;
     WallCheck wallCheck;
 
-    public float WallJumpDuration = 0.1f;
-    public float WallJumpSpeedMultiplier = 1.5f;
-
     // Use this for initialization
     void Start()
     {
@@ -35,7 +32,7 @@ public class WallJumpSMB : StateMachineBehavior
             jumpDirection = (new Vector2(1, 1)).normalized;
         }
 
-        character.SetVelocity(jumpDirection * character.JumpSpeed * WallJumpSpeedMultiplier);
+        character.WallJump(jumpDirection);
 
         StartCoroutine(WaitForJumpComplete(sm));
     }
@@ -53,11 +50,16 @@ public class WallJumpSMB : StateMachineBehavior
         {
             character.ReleaseWeapon();
         }
+
+        if (input.CycleWeapon.Down)
+        {
+            character.CycleWeapon();
+        }
     }
 
     IEnumerator WaitForJumpComplete(StateMachine sm)
     {
-        yield return new WaitForSeconds(WallJumpDuration);
+        yield return new WaitForSeconds(character.WallJumpDuration);
         sm.TransitionTo<AirborneSMB>();
     }
 }

@@ -89,7 +89,6 @@ public class WeaponSystemV2 : MonoBehaviour
 
     public void UpdateTransform(Transform t)
     {
-        Debug.Log("Updated transform to " + t.position);
         AimAxis.transform.position = t.position;
     }
 

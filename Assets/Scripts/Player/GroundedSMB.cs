@@ -31,7 +31,7 @@ public class GroundedSMB : StateMachineBehavior
     // Update is called once per frame
     public override void OnUpdate(StateMachine sm)
     {
-        float velocity = character.MaxHorizontalSpeed * Input.GetAxis("Horizontal");
+        float velocity = character.MaxHorizontalSpeed * input.HorizontalMovement.Value;
         character.SetHorizontalVelocity(velocity);
         character.FaceTowardsVelocity();
         character.Move();

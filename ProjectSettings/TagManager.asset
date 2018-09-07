@@ -6,6 +6,7 @@ TagManager:
   tags:
   - WallJumpable
   - Enemy
+  - PistolBullet
   layers:
   - Default
   - TransparentFX

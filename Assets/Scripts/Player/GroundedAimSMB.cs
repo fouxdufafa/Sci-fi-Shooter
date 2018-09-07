@@ -41,6 +41,10 @@ public class GroundedAimSMB : StateMachineBehavior
         {
             character.ReleaseWeapon();
         }
+        if (input.CycleWeapon.Down)
+        {
+            character.CycleWeapon();
+        }
 
         if (input.Jump.Down)
         {

@@ -10,16 +10,22 @@ public class RobotBoyCharacter : MonoBehaviour {
     public float DashSpeedMultiplier = 1.2f;
     public float DashDuration = 0.3f;
     public float JumpSpeed = 20f;
+    public float WallJumpSpeedMultiplier = 1.5f;
+    public float WallJumpDuration = 0.1f;
+    public AudioClip jumpSound;
+    public AudioClip dashSound;
 
     CharacterController2D character;
     Vector2 currentVelocity;
     Vector2 aimDirection;
     WeaponSystemV2 weaponSystem;
+    AudioSource audioSource;
 
 	// Use this for initialization
 	void Start () {
         character = GetComponent<CharacterController2D>();
         weaponSystem = GetComponent<WeaponSystemV2>();
+        audioSource = GetComponent<AudioSource>();
         currentVelocity = Vector2.zero;
 	}
 
@@ -32,6 +38,13 @@ public class RobotBoyCharacter : MonoBehaviour {
     public void Jump()
     {
         SetVerticalVelocity(JumpSpeed);
+        audioSource.PlayOneShot(jumpSound);
+    }
+
+    public void WallJump(Vector2 direction)
+    {
+        SetVelocity(direction.normalized * JumpSpeed * WallJumpSpeedMultiplier);
+        audioSource.PlayOneShot(jumpSound);
     }
 
     public void FaceTowardsVelocity()
