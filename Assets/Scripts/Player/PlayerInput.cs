@@ -14,6 +14,7 @@ public class PlayerInput : InputComponent
     public InputAxis VerticalAim = new InputAxis(XboxControllerAxis.LeftstickVertical);
     public InputAxis WallHug = new InputAxis(XboxControllerAxis.LeftTrigger);
     public InputAxis Aim = new InputAxis(XboxControllerAxis.LeftTrigger);
+    public InputAxis HookShot = new InputAxis(XboxControllerAxis.RightTrigger);
 
     // Use this for initialization
     protected override void GetInputs()
@@ -28,5 +29,6 @@ public class PlayerInput : InputComponent
         VerticalAim.Read();
         WallHug.Read();
         Aim.Read();
+        HookShot.Read();
     }
 }

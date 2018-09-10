@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Prime31;
@@ -15,23 +16,50 @@ public class RobotBoyCharacter : MonoBehaviour {
     public AudioClip jumpSound;
     public AudioClip dashSound;
 
-    CharacterController2D character;
+    CharacterController2D controller;
+    PlayerInput input;
+    Animator animator;
+    public WallCheck wallCheck;
+    StateMachine sm;
     Vector2 currentVelocity;
     Vector2 aimDirection;
     WeaponSystemV2 weaponSystem;
     AudioSource audioSource;
 
+    struct States
+    {
+        public GroundedState Grounded;
+        public GroundedAimingState GroundedAim;
+        public AirborneState Airborne;
+        public DashingState Dashing;
+        public WallHuggingState WallHug;
+        public WallJumpingState WallJump;
+    }
+
+    public event Action<Damager> OnTakeDamage;
+
 	// Use this for initialization
 	void Start () {
-        character = GetComponent<CharacterController2D>();
+        controller = GetComponent<CharacterController2D>();
+        input = GetComponent<PlayerInput>();
+        animator = GetComponent<Animator>();
+        wallCheck = GetComponentInChildren<WallCheck>();
         weaponSystem = GetComponent<WeaponSystemV2>();
         audioSource = GetComponent<AudioSource>();
         currentVelocity = Vector2.zero;
+
+        sm = new StateMachine();
+        sm.ChangeState(new AirborneState(this, input, animator, wallCheck, sm));
 	}
+
+    private void Update()
+    {
+        sm.Update();
+    }
 
     public void Move()
     {
-        character.move(currentVelocity * Time.deltaTime);
+        controller.move(currentVelocity * Time.deltaTime);
         UpdateWeaponsTransform();
     }
 
@@ -94,8 +122,8 @@ public class RobotBoyCharacter : MonoBehaviour {
 
     public bool IsGrounded()
     {
-        character.move(new Vector2(0, -0.001f));
-        return character.isGrounded;
+        controller.move(new Vector2(0, -0.001f));
+        return controller.isGrounded;
     }
 
     public void ApplyGravity()
@@ -151,6 +179,14 @@ public class RobotBoyCharacter : MonoBehaviour {
     public void UpdateWeaponsTransform()
     {
         weaponSystem.UpdateTransform(transform);
+    }
+
+    public void TakeDamage(Damager damager)
+    {
+        if (OnTakeDamage != null)
+        {
+            OnTakeDamage(damager);
+        }
     }
 
     private void OnDrawGizmos()

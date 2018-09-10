@@ -2,30 +2,40 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class PursueSMB : StateMachineBehavior
+public class JellyPursuePlayerState : IState
 {
     JellyController jelly;
-    List<Collider2D> collisions = new List<Collider2D>();
+    List<Collider2D> collisions;
 
     // Use this for initialization
-    void Start()
+    public JellyPursuePlayerState(JellyController jelly)
     {
-        jelly = GetComponent<JellyController>();
+        this.jelly = jelly;
+        this.collisions = new List<Collider2D>();
     }
 
     // Update is called once per frame
-    public override void OnEnter(StateMachine sm)
+    public void Enter()
     {
-        base.OnEnter(sm);
     }
 
-    public override void OnUpdate(StateMachine sm)
+    public void Update()
     {
-        ProcessCollisions(sm);
+        ProcessCollisions();
         jelly.MoveTowardsPlayer();
     }
 
-    void ProcessCollisions(StateMachine sm)
+    public void Exit()
+    {
+
+    }
+
+    public void OnTriggerEnter2D(Collider2D collider)
+    {
+
+    }
+
+    void ProcessCollisions()
     {
         foreach (Collider2D collision in collisions)
         {
@@ -33,7 +43,7 @@ public class PursueSMB : StateMachineBehavior
             {
                 Debug.Log("Collided with player");
                 jelly.SetVelocity(new Vector2(5, 5));
-            }
+            } 
             if (collision.gameObject.CompareTag("PistolBullet"))
             {
                 Debug.Log("Collided with PistolBullet");
@@ -41,11 +51,5 @@ public class PursueSMB : StateMachineBehavior
             }
         }
         collisions.Clear();
-    }
-
-    public void OnTriggerEnter2D(Collider2D collision)
-    {
-        Debug.Log("Trigger");
-        collisions.Add(collision);
     }
 }

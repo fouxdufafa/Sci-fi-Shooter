@@ -60,8 +60,6 @@ GameObject:
   - component: {fileID: 61644055127452726}
   - component: {fileID: 114781529264224852}
   - component: {fileID: 114261729377783060}
-  - component: {fileID: 114057500388494090}
-  - component: {fileID: 114601438117793932}
   m_Layer: 11
   m_Name: JellyNoPhysicsEngine
   m_TagString: Untagged
@@ -102,7 +100,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1702679436706560}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 21.99, y: 24.03, z: -0.23046875}
+  m_LocalPosition: {x: 13.789438, y: 15.830048, z: -0.23046875}
   m_LocalScale: {x: 2.7293596, y: 2.6428938, z: 1}
   m_Children:
   - {fileID: 4597738871690702}
@@ -288,18 +286,6 @@ Light:
   m_UseColorTemperature: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
---- !u!114 &114057500388494090
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1702679436706560}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eb52fc60014feeb4fb8b9b4f3b83f6bf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  IsStartBehavior: 1
 --- !u!114 &114261729377783060
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -362,18 +348,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 30
---- !u!114 &114601438117793932
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1702679436706560}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 92980e1797692c146b43e59cdecaae6e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  currentState: {fileID: 0}
 --- !u!114 &114671793345197938
 MonoBehaviour:
   m_ObjectHideFlags: 1
