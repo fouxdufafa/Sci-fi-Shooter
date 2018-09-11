@@ -15,15 +15,17 @@ public class RobotBoyCharacter : MonoBehaviour {
     public float WallJumpDuration = 0.1f;
     public AudioClip jumpSound;
     public AudioClip dashSound;
+    public GameObject hookshotPrefab;
 
     CharacterController2D controller;
     PlayerInput input;
     Animator animator;
-    public WallCheck wallCheck;
+    [HideInInspector] public WallCheck wallCheck;
     StateMachine sm;
     Vector2 currentVelocity;
     Vector2 aimDirection;
     WeaponSystemV2 weaponSystem;
+    Hookshot hookshotInstance;
     AudioSource audioSource;
 
     struct States
@@ -189,8 +191,31 @@ public class RobotBoyCharacter : MonoBehaviour {
         }
     }
 
+    public void FireHookshot()
+    {
+        // instantiate hookshot object
+        // set direction 
+        if (hookshotInstance == null)
+        {
+            Debug.Log("Firing hookshot!");
+            hookshotInstance = Instantiate(hookshotPrefab).GetComponent<Hookshot>();
+            hookshotInstance.SetPosition(weaponSystem.WeaponSocket.position);
+            hookshotInstance.SetRotation(weaponSystem.WeaponSocket.rotation);
+        }
+    }
+
+    public void AttachToHookshot(Hookshot hookshot)
+    {
+        sm.ChangeState(new HookshotAttachedState(this, sm, hookshotInstance));
+    }
+
+    public void DetachFromHookshot(Hookshot hookshot)
+    {
+        sm.ChangeState(new AirborneState(this, input, animator, wallCheck, sm));
+    }
+
     private void OnDrawGizmos()
     {
-        Gizmos.DrawLine(transform.position, (Vector2) transform.position + weaponSystem.AimDirection);
+        Gizmos.DrawLine(transform.position, (Vector2) transform.position + (weaponSystem != null ? weaponSystem.AimDirection : (Vector2) transform.right));
     }
 }

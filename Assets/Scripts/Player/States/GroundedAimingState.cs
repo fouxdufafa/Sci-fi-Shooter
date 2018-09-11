@@ -47,6 +47,10 @@ public class GroundedAimingState : IState
         {
             character.CycleWeapon();
         }
+        if (input.HookShot.Down)
+        {
+            character.FireHookshot();
+        }
 
         if (input.Jump.Down)
         {
