@@ -1,37 +1,39 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class DashingSMB : StateMachineBehavior
+public class DashingState : IState
 {
     RobotBoyCharacter character;
     Animator animator;
     PlayerInput input;
+    StateMachine sm;
 
     public bool IgnoreVerticalVelocity = false;
 
     Coroutine waitForDash;
 
     // Use this for initialization
-    void Start()
+    public DashingState(RobotBoyCharacter character, PlayerInput input, Animator animator, StateMachine sm)
     {
-        character = GetComponent<RobotBoyCharacter>();
-        animator = GetComponent<Animator>();
-        input = GetComponent<PlayerInput>();
+        this.character = character;
+        this.input = input;
+        this.animator = animator;
+        this.sm = sm;
     }
 
-    public override void OnEnter(StateMachine sm)
+    public void Enter()
     {
         animator.SetBool("Roll", true);
-        character.SetHorizontalVelocity(character.MaxHorizontalSpeed * character.DashSpeedMultiplier * Mathf.Sign(transform.localScale.x));
+        character.SetHorizontalVelocity(character.MaxHorizontalSpeed * character.DashSpeedMultiplier * Mathf.Sign(character.transform.localScale.x));
         if (IgnoreVerticalVelocity)
         {
             character.SetVerticalVelocity(0);
         }
-        waitForDash = StartCoroutine(WaitForDashComplete(sm));
+        character.ReleaseWeapon();
+        waitForDash = character.StartCoroutine(WaitForDashComplete());
     }
 
-    // Update is called once per frame
-    public override void OnUpdate(StateMachine sm)
+    public void Update()
     {
         character.Move();
         if (!character.IsGrounded() && !IgnoreVerticalVelocity)
@@ -44,21 +46,22 @@ public class DashingSMB : StateMachineBehavior
         }
     }
 
-    public override void OnExit(StateMachine sm)
+    public void Exit()
     {
+        character.StopCoroutine(waitForDash);
         animator.SetBool("Roll", false);
     }
 
-    IEnumerator WaitForDashComplete(StateMachine sm)
+    IEnumerator WaitForDashComplete()
     {
         yield return new WaitForSeconds(character.DashDuration);
         if (character.IsGrounded())
         {
-            sm.TransitionTo<GroundedSMB>();
+            sm.ChangeState(new GroundedState(character, input, animator, sm));
         }
         else
         {
-            sm.TransitionTo<AirborneSMB>();
+            sm.ChangeState(new AirborneState(character, input, animator, character.wallCheck, sm));
         }
     }
 }

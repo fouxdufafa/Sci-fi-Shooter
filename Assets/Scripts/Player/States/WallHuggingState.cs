@@ -1,23 +1,27 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class WallHugSMB : StateMachineBehavior
+public class WallHuggingState : IState
 {
     RobotBoyCharacter character;
     PlayerInput input;
+    Animator animator;
     WallCheck wallCheck;
+    StateMachine sm;
 
     WallCheck.WallContact activeWall;
 
     // Use this for initialization
-    void Start()
+    public WallHuggingState(RobotBoyCharacter character, PlayerInput input, Animator animator, WallCheck wallCheck, StateMachine sm)
     {
-        character = GetComponent<RobotBoyCharacter>();
-        input = GetComponent<PlayerInput>();
-        wallCheck = GetComponentInChildren<WallCheck>();
+        this.character = character;
+        this.input = input;
+        this.animator = animator;
+        this.wallCheck = wallCheck;
+        this.sm = sm;
     }
 
-    public override void OnEnter(StateMachine sm)
+    public void Enter()
     {
         character.SetVerticalVelocity(0);
         activeWall = wallCheck.Contact;
@@ -29,7 +33,7 @@ public class WallHugSMB : StateMachineBehavior
     }
 
     // Update is called once per frame
-    public override void OnUpdate(StateMachine sm)
+    public void Update()
     {
         // handle facing from joystick
         // check for state exits - trigger release, roll, etc
@@ -57,24 +61,24 @@ public class WallHugSMB : StateMachineBehavior
         if (input.WallHug.Value == 0)
         {
             // Release wall
-            sm.TransitionTo<AirborneSMB>();
+            sm.ChangeState(new AirborneState(character, input, animator, wallCheck, sm));
             return;
         }
         if (input.Jump.Down)
         {
-            sm.TransitionTo<WallJumpSMB>();
+            sm.ChangeState(new WallJumpingState(character, input, animator, wallCheck, sm));
             return;
         }
         if (input.Dash.Down)
         {
-            sm.TransitionTo<DashingSMB>();
+            sm.ChangeState(new DashingState(character, input, animator, sm));
             return;
         }
     }
 
-    public override void OnExit(StateMachine sm)
+    public void Exit()
     {
-        character.SetAimDirection(transform.forward);
+        character.SetAimDirection(character.transform.forward);
         character.DisableCrosshair();
     }
 }

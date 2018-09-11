@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Prime31;
@@ -14,24 +15,53 @@ public class RobotBoyCharacter : MonoBehaviour {
     public float WallJumpDuration = 0.1f;
     public AudioClip jumpSound;
     public AudioClip dashSound;
+    public GameObject hookshotPrefab;
 
-    CharacterController2D character;
+    CharacterController2D controller;
+    PlayerInput input;
+    Animator animator;
+    [HideInInspector] public WallCheck wallCheck;
+    StateMachine sm;
     Vector2 currentVelocity;
     Vector2 aimDirection;
     WeaponSystemV2 weaponSystem;
+    Hookshot hookshotInstance;
     AudioSource audioSource;
+
+    struct States
+    {
+        public GroundedState Grounded;
+        public GroundedAimingState GroundedAim;
+        public AirborneState Airborne;
+        public DashingState Dashing;
+        public WallHuggingState WallHug;
+        public WallJumpingState WallJump;
+    }
+
+    public event Action<Damager> OnTakeDamage;
 
 	// Use this for initialization
 	void Start () {
-        character = GetComponent<CharacterController2D>();
+        controller = GetComponent<CharacterController2D>();
+        input = GetComponent<PlayerInput>();
+        animator = GetComponent<Animator>();
+        wallCheck = GetComponentInChildren<WallCheck>();
         weaponSystem = GetComponent<WeaponSystemV2>();
         audioSource = GetComponent<AudioSource>();
         currentVelocity = Vector2.zero;
+
+        sm = new StateMachine();
+        sm.ChangeState(new AirborneState(this, input, animator, wallCheck, sm));
 	}
+
+    private void Update()
+    {
+        sm.Update();
+    }
 
     public void Move()
     {
-        character.move(currentVelocity * Time.deltaTime);
+        controller.move(currentVelocity * Time.deltaTime);
         UpdateWeaponsTransform();
     }
 
@@ -94,8 +124,8 @@ public class RobotBoyCharacter : MonoBehaviour {
 
     public bool IsGrounded()
     {
-        character.move(new Vector2(0, -0.001f));
-        return character.isGrounded;
+        controller.move(new Vector2(0, -0.001f));
+        return controller.isGrounded;
     }
 
     public void ApplyGravity()
@@ -153,8 +183,39 @@ public class RobotBoyCharacter : MonoBehaviour {
         weaponSystem.UpdateTransform(transform);
     }
 
+    public void TakeDamage(Damager damager)
+    {
+        if (OnTakeDamage != null)
+        {
+            OnTakeDamage(damager);
+        }
+    }
+
+    public void FireHookshot()
+    {
+        // instantiate hookshot object
+        // set direction 
+        if (hookshotInstance == null)
+        {
+            Debug.Log("Firing hookshot!");
+            hookshotInstance = Instantiate(hookshotPrefab).GetComponent<Hookshot>();
+            hookshotInstance.SetPosition(weaponSystem.WeaponSocket.position);
+            hookshotInstance.SetRotation(weaponSystem.WeaponSocket.rotation);
+        }
+    }
+
+    public void AttachToHookshot(Hookshot hookshot)
+    {
+        sm.ChangeState(new HookshotAttachedState(this, sm, hookshotInstance));
+    }
+
+    public void DetachFromHookshot(Hookshot hookshot)
+    {
+        sm.ChangeState(new AirborneState(this, input, animator, wallCheck, sm));
+    }
+
     private void OnDrawGizmos()
     {
-        Gizmos.DrawLine(transform.position, (Vector2) transform.position + weaponSystem.AimDirection);
+        Gizmos.DrawLine(transform.position, (Vector2) transform.position + (weaponSystem != null ? weaponSystem.AimDirection : (Vector2) transform.right));
     }
 }

@@ -81,6 +81,13 @@ public abstract class InputComponent : MonoBehaviour
         public float Value;
         float deadZone;
 
+        // For treating "snap" axes as buttons (for instance, left/right triggers)
+        public bool Down { get; protected set; }
+        public bool Up { get; protected set; }
+        public bool Held { get; protected set; }
+
+        float previousValue;
+
         protected static readonly Dictionary<int, string> axesToName = new Dictionary<int, string>
         {
             {(int)XboxControllerAxis.LeftstickHorizontal, "Leftstick Horizontal" },
@@ -102,6 +109,12 @@ public abstract class InputComponent : MonoBehaviour
             {
                 Value = 0f;
             }
+
+            Down = (Value == 1 && previousValue == 0);
+            Up = (Value == 0 && previousValue == 1);
+            Held = (Value == 1);
+
+            previousValue = Value;
         }
     }
 

@@ -2,35 +2,22 @@
 using System.Collections;
 using System.Linq;
 
-public class StateMachine: MonoBehaviour
+public class StateMachine
 {
-    [HideInInspector]
-    public StateMachineBehavior currentState;
+    IState currentState;
 
-    // Use this for initialization
-    void Start()
+    public void Update()
     {
-        currentState = FindInitialState();
-        currentState.OnEnter(this);
+        currentState.Update();
     }
 
-    StateMachineBehavior FindInitialState()
+    public void ChangeState(IState state)
     {
-        return GetComponents<StateMachineBehavior>().First(smb => smb.IsStartBehavior);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        //Debug.Log("Updating " + currentState);
-        currentState.OnUpdate(this);
-    }
-
-    public void TransitionTo<T>() where T : StateMachineBehavior
-    {
-        StateMachineBehavior next = GetComponent<T>();
-        currentState.OnExit(this);
-        currentState = next;
-        currentState.OnEnter(this);
+        if (currentState != null)
+        {
+            currentState.Exit();
+        }
+        currentState = state;
+        currentState.Enter();
     }
 }

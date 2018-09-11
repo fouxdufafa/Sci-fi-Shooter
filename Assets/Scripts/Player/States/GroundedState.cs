@@ -1,20 +1,22 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class GroundedSMB : StateMachineBehavior
+public class GroundedState : IState
 {
     RobotBoyCharacter character;
     PlayerInput input;
     Animator animator;
+    StateMachine sm;
 
-    public void Start()
+    public GroundedState(RobotBoyCharacter character, PlayerInput input, Animator animator, StateMachine sm)
     {
-        character = GetComponent<RobotBoyCharacter>();
-        input = GetComponent<PlayerInput>();
-        animator = GetComponentInChildren<Animator>();
+        this.character = character;
+        this.input = input;
+        this.animator = animator;
+        this.sm = sm;
     }
 
-    public override void OnEnter(StateMachine sm)
+    public void Enter()
     {
         character.SetVerticalVelocity(0f);
         animator.SetBool("Ground", true);
@@ -23,13 +25,13 @@ public class GroundedSMB : StateMachineBehavior
         // so as not to miss button down events during state transitions
         if (input.Dash.Down)
         {
-            sm.TransitionTo<DashingSMB>();
+            sm.ChangeState(new DashingState(character, input, animator, sm));
             return;
         }
     }
 
     // Update is called once per frame
-    public override void OnUpdate(StateMachine sm)
+    public void Update() 
     {
         float velocity = character.MaxHorizontalSpeed * input.HorizontalMovement.Value;
         character.SetHorizontalVelocity(velocity);
@@ -41,7 +43,7 @@ public class GroundedSMB : StateMachineBehavior
 
         if (!character.IsGrounded())
         {
-            sm.TransitionTo<AirborneSMB>(); 
+            sm.ChangeState(new AirborneState(character, input, animator, character.wallCheck, sm));
             return;
         }
 
@@ -63,20 +65,25 @@ public class GroundedSMB : StateMachineBehavior
         if (input.Jump.Down)
         {
             character.Jump();
-            sm.TransitionTo<AirborneSMB>();
+            sm.ChangeState(new AirborneState(character, input, animator, character.wallCheck, sm));
             return;
         }
 
         if (input.Dash.Down)
         {
-            sm.TransitionTo<DashingSMB>();
+            sm.ChangeState(new DashingState(character, input, animator, sm));
             return;
         }
 
         if (input.Aim.Value == 1)
         {
-            sm.TransitionTo<GroundedAimSMB>();
+            sm.ChangeState(new GroundedAimingState(character, input, animator, sm));
             return;
         }
+    }
+
+    public void Exit()
+    {
+
     }
 }

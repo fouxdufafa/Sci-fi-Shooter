@@ -2,39 +2,41 @@
 using System.Collections;
 using Prime31;
 
-public class AirborneSMB : StateMachineBehavior
+public class AirborneState : IState
 {
     RobotBoyCharacter character;
     PlayerInput input;
-    WallCheck wallHugCheck;
+    WallCheck wallCheck;
     Animator animator;
+    StateMachine sm;
 
-    public void Start()
+    public AirborneState(RobotBoyCharacter character, PlayerInput input, Animator animator, WallCheck wallHugCheck, StateMachine sm)
     {
-        character = GetComponent<RobotBoyCharacter>();
-        input = GetComponent<PlayerInput>();
-        animator = GetComponent<Animator>();
-        wallHugCheck = GetComponentInChildren<WallCheck>();
+        this.character = character;
+        this.input = input;
+        this.animator = animator;
+        this.wallCheck = wallHugCheck;
+        this.sm = sm;
     }
 
-    public override void OnEnter(StateMachine sm)
+    public void Enter()
     {
         animator.SetBool("Ground", false);
     }
 
-    public override void OnUpdate(StateMachine sm)
+    public void Update()
     {
         if (input.WallHug.Value == 1)
         {
-            if (wallHugCheck.Contact != null)
+            if (wallCheck.Contact != null)
             {
-                sm.TransitionTo<WallHugSMB>();
+                sm.ChangeState(new WallHuggingState(character, input, animator, wallCheck, sm));
                 return;
             }
         }
 
         character.ApplyGravity();
-        character.SetHorizontalVelocity(character.MaxHorizontalSpeed * Input.GetAxis("Horizontal"));
+        character.SetHorizontalVelocity(character.MaxHorizontalSpeed * input.HorizontalMovement.Value);
         character.FaceTowardsVelocity();
         character.Move();
         character.SetAimDirection(character.GetFacing(), true);
@@ -56,24 +58,29 @@ public class AirborneSMB : StateMachineBehavior
 
         if (character.IsGrounded())
         {
-            sm.TransitionTo<GroundedSMB>();
+            sm.ChangeState(new GroundedState(character, input, animator, sm));
             return;
         }
 
         if (input.Dash.Down)
         {
             Debug.Log("Roll pressed in " + this);
-            sm.TransitionTo<DashingSMB>();
+            sm.ChangeState(new DashingState(character, input, animator, sm));
             return;
         }
 
         if (input.Jump.Down)
         {
-            if (wallHugCheck.Contact != null)
+            if (wallCheck.Contact != null)
             {
-                sm.TransitionTo<WallJumpSMB>();
+                sm.ChangeState(new WallJumpingState(character, input, animator, wallCheck, sm));
                 return;
             }
         }
+    }
+
+    public void Exit()
+    {
+
     }
 }

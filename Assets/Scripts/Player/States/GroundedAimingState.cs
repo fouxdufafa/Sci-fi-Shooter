@@ -1,21 +1,23 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class GroundedAimSMB : StateMachineBehavior
+public class GroundedAimingState : IState
 {
     RobotBoyCharacter character;
     PlayerInput input;
     Animator animator;
+    StateMachine sm;
 
     // Use this for initialization
-    void Start()
+    public GroundedAimingState(RobotBoyCharacter character, PlayerInput input, Animator animator, StateMachine sm)
     {
-        character = GetComponent<RobotBoyCharacter>();
-        input = GetComponent<PlayerInput>();
-        animator = GetComponent<Animator>();
+        this.character = character;
+        this.input = input;
+        this.animator = animator;
+        this.sm = sm;
     }
 
-    public override void OnEnter(StateMachine sm)
+    public void Enter()
     {
         character.SetHorizontalVelocity(0f);
         character.EnableCrosshair();
@@ -25,7 +27,7 @@ public class GroundedAimSMB : StateMachineBehavior
         animator.SetFloat("Speed", 0);
     }
 
-    public override void OnUpdate(StateMachine sm)
+    public void Update()
     {
         float horizontal = input.HorizontalAim.Value;
         float vertical = input.VerticalAim.Value;
@@ -45,28 +47,32 @@ public class GroundedAimSMB : StateMachineBehavior
         {
             character.CycleWeapon();
         }
+        if (input.HookShot.Down)
+        {
+            character.FireHookshot();
+        }
 
         if (input.Jump.Down)
         {
             character.Jump();
-            sm.TransitionTo<AirborneSMB>();
+            sm.ChangeState(new AirborneState(character, input, animator, character.wallCheck, sm));
             return;
         }
 
         if (input.Dash.Down)
         {
-            sm.TransitionTo<DashingSMB>();
+            sm.ChangeState(new DashingState(character, input, animator, sm));
             return;
         }
 
         if (input.Aim.Value == 0)
         {
-            sm.TransitionTo<GroundedSMB>();
+            sm.ChangeState(new GroundedState(character, input, animator, sm));
             return;
         }
     }
 
-    public override void OnExit(StateMachine sm)
+    public void Exit()
     {
         character.DisableCrosshair();
         character.SetAimDirection(character.GetFacing());
