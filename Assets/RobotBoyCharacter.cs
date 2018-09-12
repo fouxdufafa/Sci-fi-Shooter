@@ -129,6 +129,12 @@ public class RobotBoyCharacter : MonoBehaviour {
         return controller.isGrounded;
     }
 
+    public bool IsTouchingCeiling()
+    {
+        controller.move(new Vector2(0, 0.001f));
+        return controller.isTouchingCeiling;
+    }
+
     public void ApplyGravity()
     {
         currentVelocity += Gravity * Time.deltaTime;

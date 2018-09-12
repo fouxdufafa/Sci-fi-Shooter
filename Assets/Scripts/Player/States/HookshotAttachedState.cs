@@ -20,6 +20,7 @@ public class HookshotAttachedState : IState, ICollisionAware
     {
         Vector2 velocity = (hookshot.transform.position - character.transform.position).normalized * hookshot.ReelInSpeed;
         character.SetVelocity(velocity);
+        character.ReleaseWeapon();
     }
 
     public void Update()
