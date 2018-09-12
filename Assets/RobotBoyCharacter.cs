@@ -11,7 +11,7 @@ public class RobotBoyCharacter : MonoBehaviour {
     public float DashSpeedMultiplier = 1.2f;
     public float DashDuration = 0.3f;
     public float JumpSpeed = 20f;
-    public float WallJumpSpeedMultiplier = 1.5f;
+    public float WallJumpSpeedMultiplier = 1.0f;
     public float WallJumpDuration = 0.1f;
     public AudioClip jumpSound;
     public AudioClip dashSound;
