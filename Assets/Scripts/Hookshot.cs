@@ -3,7 +3,8 @@ using UnityEditor;
 
 public class Hookshot : MonoBehaviour
 {
-    public float Speed = 10f;
+    public float DeploySpeed = 100f;
+    public float ReelInSpeed = 50f;
     public LayerMask attachableLayers;
 
     RobotBoyCharacter character;
@@ -11,6 +12,7 @@ public class Hookshot : MonoBehaviour
 
     Vector2 velocity;
     bool attached;
+    public Collider2D attachedCollider { get; private set; }
 
     private void Awake()
     {
@@ -22,7 +24,7 @@ public class Hookshot : MonoBehaviour
     private void Start()
     {
         attached = false;
-        velocity = transform.right * Speed;
+        velocity = transform.right * DeploySpeed;
         UpdateTrailRendererPositions();
     }
 
@@ -34,6 +36,7 @@ public class Hookshot : MonoBehaviour
             if (hit.collider != null)
             {
                 SetPosition(hit.point);
+                attachedCollider = hit.collider;
 
                 // we hit a wall! transition character to hookshot attached state
                 character.AttachToHookshot(this);
@@ -61,7 +64,6 @@ public class Hookshot : MonoBehaviour
     public void SetPosition(Vector2 position)
     {
         transform.position = position;
-
     }
 
     public void SetRotation(Quaternion rotation)
@@ -72,9 +74,10 @@ public class Hookshot : MonoBehaviour
     RaycastHit2D CheckForObstacle()
     {
         Vector2 raycastOrigin = transform.position;
-        Vector2 raycastDest = (Vector2)(transform.position + transform.right * Speed * Time.deltaTime);
 
-        return Physics2D.Raycast(raycastOrigin, transform.forward, Speed, attachableLayers);
+        RaycastHit2D hit = Physics2D.Raycast(raycastOrigin, transform.right, DeploySpeed * Time.deltaTime, attachableLayers);
+        Debug.DrawLine(raycastOrigin, raycastOrigin + (Vector2) transform.right * DeploySpeed * Time.deltaTime);
+        return hit;
     }
 
     public void Remove()
@@ -89,10 +92,5 @@ public class Hookshot : MonoBehaviour
             Gizmos.color = Color.green;
             Gizmos.DrawSphere(transform.position, 0.1f);
         }
-
-
-        Gizmos.color = Color.red;
-        Gizmos.DrawSphere(trailRenderer.GetPosition(0), 0.1f);
-        Gizmos.DrawSphere(trailRenderer.GetPosition(1), 0.1f);
     }
 }

@@ -4,7 +4,7 @@ using System.Linq;
 
 public class StateMachine
 {
-    IState currentState;
+    protected IState currentState;
 
     public void Update()
     {

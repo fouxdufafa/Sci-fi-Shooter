@@ -8,12 +8,12 @@ public class GroundedState : IState
     Animator animator;
     StateMachine sm;
 
-    public GroundedState(RobotBoyCharacter character, PlayerInput input, Animator animator, StateMachine sm)
+    public GroundedState(RobotBoyCharacter character)
     {
         this.character = character;
-        this.input = input;
-        this.animator = animator;
-        this.sm = sm;
+        this.input = character.input;
+        this.animator = character.animator;
+        this.sm = character.sm;
     }
 
     public void Enter()
@@ -21,11 +21,17 @@ public class GroundedState : IState
         character.SetVerticalVelocity(0f);
         animator.SetBool("Ground", true);
 
+        if (input.Aim.Held)
+        {
+            sm.ChangeState(new GroundedAimingState(character));
+            return;
+        }
+
         // TODO: Instead of catching this in OnEnter, use a buffered input manager
         // so as not to miss button down events during state transitions
         if (input.Dash.Down)
         {
-            sm.ChangeState(new DashingState(character, input, animator, sm));
+            sm.ChangeState(new DashingState(character));
             return;
         }
     }
@@ -43,7 +49,7 @@ public class GroundedState : IState
 
         if (!character.IsGrounded())
         {
-            sm.ChangeState(new AirborneState(character, input, animator, character.wallCheck, sm));
+            sm.ChangeState(new AirborneState(character));
             return;
         }
 
@@ -65,19 +71,19 @@ public class GroundedState : IState
         if (input.Jump.Down)
         {
             character.Jump();
-            sm.ChangeState(new AirborneState(character, input, animator, character.wallCheck, sm));
+            sm.ChangeState(new AirborneState(character));
             return;
         }
 
         if (input.Dash.Down)
         {
-            sm.ChangeState(new DashingState(character, input, animator, sm));
+            sm.ChangeState(new DashingState(character));
             return;
         }
 
-        if (input.Aim.Value == 1)
+        if (input.Aim.Held)
         {
-            sm.ChangeState(new GroundedAimingState(character, input, animator, sm));
+            sm.ChangeState(new GroundedAimingState(character));
             return;
         }
     }

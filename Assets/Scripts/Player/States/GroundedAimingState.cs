@@ -9,30 +9,25 @@ public class GroundedAimingState : IState
     StateMachine sm;
 
     // Use this for initialization
-    public GroundedAimingState(RobotBoyCharacter character, PlayerInput input, Animator animator, StateMachine sm)
+    public GroundedAimingState(RobotBoyCharacter character)
     {
         this.character = character;
-        this.input = input;
-        this.animator = animator;
-        this.sm = sm;
+        this.input = character.input;
+        this.animator = character.animator;
+        this.sm = character.sm;
     }
 
     public void Enter()
     {
         character.SetHorizontalVelocity(0f);
         character.EnableCrosshair();
-        float horizontal = input.HorizontalAim.Value;
-        float vertical = input.VerticalAim.Value;
-        character.SetAimDirection(new Vector2(horizontal, vertical));
+        character.AimAndFaceCrosshair();
         animator.SetFloat("Speed", 0);
     }
 
     public void Update()
     {
-        float horizontal = input.HorizontalAim.Value;
-        float vertical = input.VerticalAim.Value;
-        character.FaceTowards(horizontal);
-        character.SetAimDirection(new Vector2(horizontal, vertical));
+        character.AimAndFaceCrosshair();
 
         if (input.Fire.Down)
         {
@@ -55,19 +50,19 @@ public class GroundedAimingState : IState
         if (input.Jump.Down)
         {
             character.Jump();
-            sm.ChangeState(new AirborneState(character, input, animator, character.wallCheck, sm));
+            sm.ChangeState(new AirborneState(character));
             return;
         }
 
         if (input.Dash.Down)
         {
-            sm.ChangeState(new DashingState(character, input, animator, sm));
+            sm.ChangeState(new DashingState(character));
             return;
         }
 
         if (input.Aim.Value == 0)
         {
-            sm.ChangeState(new GroundedState(character, input, animator, sm));
+            sm.ChangeState(new GroundedState(character));
             return;
         }
     }
@@ -75,6 +70,6 @@ public class GroundedAimingState : IState
     public void Exit()
     {
         character.DisableCrosshair();
-        character.SetAimDirection(character.GetFacing());
+        character.StopAim();
     }
 }

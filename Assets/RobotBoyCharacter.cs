@@ -18,14 +18,14 @@ public class RobotBoyCharacter : MonoBehaviour {
     public GameObject hookshotPrefab;
 
     CharacterController2D controller;
-    PlayerInput input;
-    Animator animator;
-    [HideInInspector] public WallCheck wallCheck;
-    StateMachine sm;
+    public PlayerInput input { get; private set; }
+    public Animator animator { get; private set; }
+    public WallCheck wallCheck { get; private set; }
+    public CollisionAwareStateMachine sm { get; private set; }
+    public Hookshot hookshotInstance { get; private set; }
     Vector2 currentVelocity;
     Vector2 aimDirection;
     WeaponSystemV2 weaponSystem;
-    Hookshot hookshotInstance;
     AudioSource audioSource;
 
     struct States
@@ -50,8 +50,9 @@ public class RobotBoyCharacter : MonoBehaviour {
         audioSource = GetComponent<AudioSource>();
         currentVelocity = Vector2.zero;
 
-        sm = new StateMachine();
-        sm.ChangeState(new AirborneState(this, input, animator, wallCheck, sm));
+        sm = new CollisionAwareStateMachine();
+        controller.onControllerCollidedEvent += CollisionHandler;
+        sm.ChangeState(new AirborneState(this));
 	}
 
     private void Update()
@@ -153,6 +154,11 @@ public class RobotBoyCharacter : MonoBehaviour {
         weaponSystem.SetAimDirection(direction, ignoreMaxDelta);
     }
 
+    public void SetAimDirection(float x, float y, bool ignoreMaxDelta = false)
+    {
+        weaponSystem.SetAimDirection(new Vector2(x, y), ignoreMaxDelta);
+    }
+
     public void EnableCrosshair()
     {
         weaponSystem.EnableCrosshair();
@@ -161,6 +167,20 @@ public class RobotBoyCharacter : MonoBehaviour {
     public void DisableCrosshair()
     {
         weaponSystem.DisableCrosshair();
+    }
+
+    public void AimAndFaceCrosshair()
+    {
+        float horizontal = input.HorizontalAim.Value;
+        float vertical = input.VerticalAim.Value;
+        FaceTowards(horizontal);
+        SetAimDirection(horizontal, vertical);
+    }
+
+    public void StopAim()
+    {
+        DisableCrosshair();
+        SetAimDirection(GetFacing());
     }
 
     public void FireWeapon()
@@ -206,16 +226,21 @@ public class RobotBoyCharacter : MonoBehaviour {
 
     public void AttachToHookshot(Hookshot hookshot)
     {
-        sm.ChangeState(new HookshotAttachedState(this, sm, hookshotInstance));
+        sm.ChangeState(new HookshotAttachedState(this));
     }
 
     public void DetachFromHookshot(Hookshot hookshot)
     {
-        sm.ChangeState(new AirborneState(this, input, animator, wallCheck, sm));
+        sm.ChangeState(new AirborneState(this));
     }
 
     private void OnDrawGizmos()
     {
         Gizmos.DrawLine(transform.position, (Vector2) transform.position + (weaponSystem != null ? weaponSystem.AimDirection : (Vector2) transform.right));
+    }
+
+    void CollisionHandler(RaycastHit2D hit)
+    {
+        sm.HandleCollision(hit.collider);
     }
 }

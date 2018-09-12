@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-public class HookshotAttachedState : IState
+public class HookshotAttachedState : IState, ICollisionAware
 {
     RobotBoyCharacter character;
     StateMachine sm;
@@ -9,33 +9,33 @@ public class HookshotAttachedState : IState
 
     float epsilon = 1f;
 
-    public HookshotAttachedState(RobotBoyCharacter character, StateMachine sm, Hookshot hookshot)
+    public HookshotAttachedState(RobotBoyCharacter character)
     {
         this.character = character;
-        this.sm = sm;
-        this.hookshot = hookshot;
+        this.sm = character.sm;
+        this.hookshot = character.hookshotInstance;
     }
 
     public void Enter()
     {
-        Vector2 velocity = (hookshot.transform.position - character.transform.position).normalized * hookshot.Speed;
+        Vector2 velocity = (hookshot.transform.position - character.transform.position).normalized * hookshot.ReelInSpeed;
         character.SetVelocity(velocity);
     }
 
     public void Update()
     {
         character.Move();
-        Vector2 distance = hookshot.transform.position - character.transform.position;
-        if (distance.magnitude < epsilon)
-        {
-            Debug.Log("Detaching from hookshot");
-            character.DetachFromHookshot(hookshot);
-        }
     }
 
     public void Exit()
     {
         hookshot.Remove();
         character.SetVelocity(Vector2.zero);
+    }
+
+    public void HandleCollision(Collider2D collider)
+    {
+        Debug.Log("Hookshot interrupted by collision");
+        sm.ChangeState(new AirborneState(character));
     }
 }

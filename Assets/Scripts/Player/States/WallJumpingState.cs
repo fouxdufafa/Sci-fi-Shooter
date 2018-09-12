@@ -12,13 +12,13 @@ public class WallJumpingState : IState
     Coroutine waitForWallJump;
 
     // Use this for initialization
-    public WallJumpingState(RobotBoyCharacter character, PlayerInput input, Animator animator, WallCheck wallCheck, StateMachine sm)
+    public WallJumpingState(RobotBoyCharacter character)
     {
         this.character = character;
-        this.input = input;
-        this.animator = animator;
-        this.wallCheck = wallCheck;
-        this.sm = sm;
+        this.input = character.input;
+        this.animator = character.animator;
+        this.wallCheck = character.wallCheck;
+        this.sm = character.sm;
     }
 
     public void Enter()
@@ -41,11 +41,27 @@ public class WallJumpingState : IState
         character.WallJump(jumpDirection);
 
         waitForWallJump = character.StartCoroutine(WaitForJumpComplete());
+
+        if (input.Aim.Held)
+        {
+            character.EnableCrosshair();
+            character.AimAndFaceCrosshair();
+        }
     }
 
     public void Update()
     {
         character.Move();
+
+        if (input.Aim.Held)
+        {
+            character.EnableCrosshair();
+            character.AimAndFaceCrosshair();
+        } else
+        {
+            character.DisableCrosshair();
+            character.StopAim();
+        }
 
         if (input.Fire.Down)
         {
@@ -71,6 +87,6 @@ public class WallJumpingState : IState
     IEnumerator WaitForJumpComplete()
     {
         yield return new WaitForSeconds(character.WallJumpDuration);
-        sm.ChangeState(new AirborneState(character, input, animator, wallCheck, sm));
+        sm.ChangeState(new AirborneState(character));
     }
 }

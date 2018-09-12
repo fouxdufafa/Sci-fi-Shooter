@@ -13,12 +13,12 @@ public class DashingState : IState
     Coroutine waitForDash;
 
     // Use this for initialization
-    public DashingState(RobotBoyCharacter character, PlayerInput input, Animator animator, StateMachine sm)
+    public DashingState(RobotBoyCharacter character)
     {
         this.character = character;
-        this.input = input;
-        this.animator = animator;
-        this.sm = sm;
+        this.input = character.input;
+        this.animator = character.animator;
+        this.sm = character.sm;
     }
 
     public void Enter()
@@ -57,11 +57,11 @@ public class DashingState : IState
         yield return new WaitForSeconds(character.DashDuration);
         if (character.IsGrounded())
         {
-            sm.ChangeState(new GroundedState(character, input, animator, sm));
+            sm.ChangeState(new GroundedState(character));
         }
         else
         {
-            sm.ChangeState(new AirborneState(character, input, animator, character.wallCheck, sm));
+            sm.ChangeState(new AirborneState(character));
         }
     }
 }

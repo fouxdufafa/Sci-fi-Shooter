@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
-using Prime31;
 
-public class AirborneState : IState
+public class AirborneAimingState : IState
 {
     RobotBoyCharacter character;
     PlayerInput input;
@@ -10,7 +9,7 @@ public class AirborneState : IState
     Animator animator;
     StateMachine sm;
 
-    public AirborneState(RobotBoyCharacter character)
+    public AirborneAimingState(RobotBoyCharacter character)
     {
         this.character = character;
         this.input = character.input;
@@ -22,24 +21,13 @@ public class AirborneState : IState
     public void Enter()
     {
         animator.SetBool("Ground", false);
-        if (input.WallHug.Held)
-        {
-            if (wallCheck.Contact != null)
-            {
-                sm.ChangeState(new WallHuggingState(character));
-                return;
-            }
-        }
-        if (input.Aim.Held)
-        {
-            sm.ChangeState(new AirborneAimingState(character));
-            return;
-        }
+        character.EnableCrosshair();
+        character.AimAndFaceCrosshair();
     }
 
     public void Update()
     {
-        if (input.WallHug.Held)
+        if (input.WallHug.Value == 1)
         {
             if (wallCheck.Contact != null)
             {
@@ -48,13 +36,12 @@ public class AirborneState : IState
             }
         }
 
-        // TODO: Set vertical velocity to zero if we hit the ceiling
+        character.AimAndFaceCrosshair();
 
+        // TODO: Set vertical velocity to zero if we hit the ceiling
         character.ApplyGravity();
         character.SetHorizontalVelocity(character.MaxHorizontalSpeed * input.HorizontalMovement.Value);
-        character.FaceTowardsVelocity();
         character.Move();
-        character.SetAimDirection(character.GetFacing(), true);
 
         if (input.Fire.Down)
         {
@@ -98,15 +85,16 @@ public class AirborneState : IState
             }
         }
 
-        if (input.Aim.Held)
+        if (input.Aim.Up)
         {
-            sm.ChangeState(new AirborneAimingState(character));
+            sm.ChangeState(new AirborneState(character));
             return;
         }
     }
 
     public void Exit()
     {
-
+        character.DisableCrosshair();
     }
 }
+

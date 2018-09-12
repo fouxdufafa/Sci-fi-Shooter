@@ -12,13 +12,13 @@ public class WallHuggingState : IState
     WallCheck.WallContact activeWall;
 
     // Use this for initialization
-    public WallHuggingState(RobotBoyCharacter character, PlayerInput input, Animator animator, WallCheck wallCheck, StateMachine sm)
+    public WallHuggingState(RobotBoyCharacter character)
     {
         this.character = character;
-        this.input = input;
-        this.animator = animator;
-        this.wallCheck = wallCheck;
-        this.sm = sm;
+        this.input = character.input;
+        this.animator = character.animator;
+        this.wallCheck = character.wallCheck;
+        this.sm = character.sm;
     }
 
     public void Enter()
@@ -26,10 +26,8 @@ public class WallHuggingState : IState
         character.SetVerticalVelocity(0);
         activeWall = wallCheck.Contact;
 
-        float horizontal = input.HorizontalAim.Value;
-        float vertical = input.VerticalAim.Value;
-        character.SetAimDirection(new Vector2(horizontal, vertical));
         character.EnableCrosshair();
+        character.AimAndFaceCrosshair();
     }
 
     // Update is called once per frame
@@ -37,11 +35,7 @@ public class WallHuggingState : IState
     {
         // handle facing from joystick
         // check for state exits - trigger release, roll, etc
-        character.FaceTowards(Input.GetAxis("Horizontal"));
-
-        float horizontal = input.HorizontalAim.Value;
-        float vertical = input.VerticalAim.Value;
-        character.SetAimDirection(new Vector2(horizontal, vertical));
+        character.AimAndFaceCrosshair();
 
         if (input.Fire.Down)
         {
@@ -58,27 +52,32 @@ public class WallHuggingState : IState
             character.CycleWeapon();
         }
 
+        if (input.HookShot.Down)
+        {
+            character.FireHookshot();
+        }
+
         if (input.WallHug.Value == 0)
         {
             // Release wall
-            sm.ChangeState(new AirborneState(character, input, animator, wallCheck, sm));
+            sm.ChangeState(new AirborneState(character));
             return;
         }
         if (input.Jump.Down)
         {
-            sm.ChangeState(new WallJumpingState(character, input, animator, wallCheck, sm));
+            sm.ChangeState(new WallJumpingState(character));
             return;
         }
         if (input.Dash.Down)
         {
-            sm.ChangeState(new DashingState(character, input, animator, sm));
+            sm.ChangeState(new DashingState(character));
             return;
         }
     }
 
     public void Exit()
     {
-        character.SetAimDirection(character.transform.forward);
         character.DisableCrosshair();
+        character.StopAim();
     }
 }
