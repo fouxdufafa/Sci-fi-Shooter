@@ -26,7 +26,7 @@ public class ContinuousDamage : MonoBehaviour {
             receiver = target.GetComponent<DamageReceiver>();
             if (receiver != null)
             {
-                receiver.TakeDamage(new Damager(dps * Time.deltaTime, DamageForce.None));
+                receiver.TakeDamage(new Damager(dps * Time.deltaTime, DamageForce.None, DamageType.Continuous));
                 Debug.Log("Damaged!");
             }
             yield return null;

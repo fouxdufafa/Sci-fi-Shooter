@@ -138,6 +138,6 @@ MonoBehaviour:
     type: 2}
   hitLayers:
     serializedVersion: 2
-    m_Bits: 67841
+    m_Bits: 2621441
   laserSoundLoop: {fileID: 8300000, guid: 19fabfdd506ce504fa609dbcc61fbb11, type: 3}
   maxAngleBetweenRaycasts: 10
