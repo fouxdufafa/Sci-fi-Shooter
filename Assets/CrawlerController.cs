@@ -5,11 +5,11 @@ using Prime31;
 
 public class CrawlerController : MonoBehaviour, IDamageable {
 
-    public CharacterController2D controller { get; private set; }
     public CollisionAwareStateMachine sm { get; private set; }
     public Animator animator { get; private set; }
     public SpriteFlasher flasher { get; private set; }
     public AudioSource audioSource { get; private set; }
+    public PatrolMovement movement { get; private set; }
 
     [SerializeField] AudioClip damageSound;
 
@@ -20,13 +20,13 @@ public class CrawlerController : MonoBehaviour, IDamageable {
 
     // Use this for initialization
     void Start () {
-        controller = GetComponent<CharacterController2D>();
+        movement = GetComponent<PatrolMovement>();
         animator = GetComponent<Animator>();
         flasher = GetComponent<SpriteFlasher>();
         audioSource = GetComponent<AudioSource>();
 
         sm = new CollisionAwareStateMachine();
-        sm.ChangeState(new Idle(this));
+        sm.ChangeState(new Patrol(this));
 	}
 	
 	// Update is called once per frame
