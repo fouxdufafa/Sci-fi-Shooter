@@ -5,6 +5,7 @@ using UnityEngine;
 public class PatrolMovement : MonoBehaviour {
 
     [SerializeField] float speed;
+    [SerializeField] float lookaheadFactor = 0.05f;
 
     Collider2D c2d;
     RaycastHit2D[] hits;
@@ -17,7 +18,7 @@ public class PatrolMovement : MonoBehaviour {
 	
 	// Update is called once per frame
 	public void Move () {
-        if (c2d.Cast(transform.right, hits, speed * Time.deltaTime) != 0)
+        if (c2d.Cast(transform.right, hits, speed * lookaheadFactor) != 0)
         {
             Flip();
         }
