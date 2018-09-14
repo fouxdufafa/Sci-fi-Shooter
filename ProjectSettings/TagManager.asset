@@ -26,10 +26,10 @@ TagManager:
   - IgnorePlayer
   - Damageable
   - Hookshot
-  - 
-  - 
-  - 
-  - 
+  - EnemyMovementCollider
+  - EnemyDamageable
+  - PlayerWeapon
+  - EnemyBodyCollider
   - 
   - 
   - 

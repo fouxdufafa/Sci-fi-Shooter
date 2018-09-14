@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class MiniJelly : MonoBehaviour {
 
-    Damageable health;
+    Health health;
     Rigidbody2D rb2d;
 
 	// Use this for initialization
 	void Start () {
-        health = GetComponent<Damageable>();
+        health = GetComponent<Health>();
         health.onDieObservers += OnDie;
     }
 

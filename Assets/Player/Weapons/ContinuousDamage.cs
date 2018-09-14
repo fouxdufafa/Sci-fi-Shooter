@@ -19,14 +19,14 @@ public class ContinuousDamage : MonoBehaviour {
 
     IEnumerator DamageCoroutine(GameObject target)
     {
-        IDamageable damageable;
+        DamageReceiver receiver;
         while (target != null)
         {
             Debug.Log("Damaging...");
-            damageable = target.GetComponent<IDamageable>();
-            if (damageable != null)
+            receiver = target.GetComponent<DamageReceiver>();
+            if (receiver != null)
             {
-                damageable.TakeDamage(dps * Time.deltaTime);
+                receiver.TakeDamage(new Damager(dps * Time.deltaTime, DamageForce.None));
                 Debug.Log("Damaged!");
             }
             yield return null;

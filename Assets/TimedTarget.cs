@@ -23,7 +23,7 @@ public class TimedTarget : MonoBehaviour, IDamageable {
         ChangeState(LockState.Locked);
     }
 
-    public void TakeDamage(float amount)
+    public void TakeDamage(Damager damager)
     {
         switch (currentState)
         {

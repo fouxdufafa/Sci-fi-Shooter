@@ -10,7 +10,7 @@ public class EnemyJelly : MonoBehaviour {
     AbstractMovement movement;
     Animator animator;
     BoltAttackScript attackRoutine;
-    Damageable health;
+    Health health;
     AudioSource audioSource;
     int zapPrepare;
     int zapStart;
@@ -18,7 +18,7 @@ public class EnemyJelly : MonoBehaviour {
     
 	// Use this for initialization
 	void Start () {
-        health = GetComponent<Damageable>();
+        health = GetComponent<Health>();
         health.onDieObservers += OnDie;
         movement = GetComponent<AbstractMovement>();
         animator = GetComponent<Animator>();

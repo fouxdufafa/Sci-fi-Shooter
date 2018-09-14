@@ -76,10 +76,10 @@ public class AirborneState : IState
             character.FireHookshot();
         }
 
-        if (character.IsTouchingCeiling())
-        {
-            character.SetVerticalVelocity(0);
-        }
+        //if (character.IsTouchingCeiling())
+        //{
+        //    character.SetVerticalVelocity(0);
+        //}
 
         if (character.IsGrounded())
         {

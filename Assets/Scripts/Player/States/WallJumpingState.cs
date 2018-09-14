@@ -23,7 +23,11 @@ public class WallJumpingState : IState
 
     public void Enter()
     {
-        WallCheck.WallContact contact = wallCheck.Contact;
+        WallCheck.WallContact contact = wallCheck.Contact; // might be null if character no longer faces wall
+        if (contact == null)
+        {
+            sm.ChangeState(new AirborneState(character));
+        }
         Vector2 contactPoint = contact.ContactPoint;
         Vector2 jumpDirection;
 

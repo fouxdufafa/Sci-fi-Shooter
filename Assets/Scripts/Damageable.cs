@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Damageable : MonoBehaviour, IDamageable {
+public class Health : MonoBehaviour, IDamageable {
 
     [SerializeField] float maxHealth;
     private float currentHealth;
@@ -30,8 +30,9 @@ public class Damageable : MonoBehaviour, IDamageable {
         }
 	}
 
-    public void TakeDamage (float amount)
+    public void TakeDamage(Damager damager)
     {
+        float amount = damager.Amount;
         currentHealth = Mathf.Clamp(currentHealth - amount, 0, maxHealth);
         Debug.Log("Took " + amount + " damage, current health: " + currentHealth);
         flasher.Flash();

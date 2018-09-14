@@ -5,6 +5,7 @@ using System.Linq;
 public class StateMachine
 {
     protected IState currentState;
+    protected IState previousState;
 
     public void Update()
     {
@@ -17,6 +18,7 @@ public class StateMachine
         {
             currentState.Exit();
         }
+        previousState = currentState;
         currentState = state;
         currentState.Enter();
     }
