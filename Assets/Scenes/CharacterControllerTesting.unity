@@ -386,16 +386,6 @@ Prefab:
       propertyPath: m_Name
       value: Crawler (2)
       objectReference: {fileID: 0}
-    - target: {fileID: 114952094253085832, guid: 8081d53ef1501464f8d9fc59f7c018d9,
-        type: 2}
-      propertyPath: timeInitialJumpOffset
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114133253446990522, guid: 8081d53ef1501464f8d9fc59f7c018d9,
-        type: 2}
-      propertyPath: speed
-      value: 5
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 8081d53ef1501464f8d9fc59f7c018d9, type: 2}
   m_IsPrefabParent: 0
@@ -2339,6 +2329,11 @@ Prefab:
     - target: {fileID: 4013419382416130, guid: 8081d53ef1501464f8d9fc59f7c018d9, type: 2}
       propertyPath: m_LocalScale.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114952094253085832, guid: 8081d53ef1501464f8d9fc59f7c018d9,
+        type: 2}
+      propertyPath: timeInitialJumpOffset
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 8081d53ef1501464f8d9fc59f7c018d9, type: 2}
