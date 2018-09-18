@@ -15,7 +15,7 @@ public class DamageReceiver : MonoBehaviour, IDamageable {
     // Update is called once per frame
     public void TakeDamage(Damager damager)
     {
-        if (damageable != null)
+        if (damageable != null && isActiveAndEnabled)
         {
             damageable.TakeDamage(damager);
         }

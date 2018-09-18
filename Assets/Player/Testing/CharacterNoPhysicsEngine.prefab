@@ -28,6 +28,7 @@ GameObject:
   - component: {fileID: 114484314249995002}
   - component: {fileID: 114036631150519306}
   - component: {fileID: 114415613832964498}
+  - component: {fileID: 114739384950232452}
   m_Layer: 12
   m_Name: CharacterNoPhysicsEngine
   m_TagString: Player
@@ -205,7 +206,7 @@ Rigidbody2D:
   m_GameObject: {fileID: 1032298630864846}
   m_BodyType: 1
   m_Simulated: 1
-  m_UseFullKinematicContacts: 0
+  m_UseFullKinematicContacts: 1
   m_UseAutoMass: 0
   m_Mass: 1
   m_LinearDrag: 1
@@ -419,9 +420,13 @@ MonoBehaviour:
   JumpSpeed: 20
   WallJumpSpeedMultiplier: 1.5
   WallJumpDuration: 0.1
+  HurtLossOfControlDuration: 0.25
+  InvulnerableDuration: 3
   jumpSound: {fileID: 8300000, guid: 3d4e0703988fdcb4fac84d206f1f3339, type: 3}
   dashSound: {fileID: 8300000, guid: 1e75d2d757ca7c14593cb16fbb58651c, type: 3}
-  wallCheck: {fileID: 0}
+  hurtSound: {fileID: 8300000, guid: 33b61f7c493b4c94d8c7f2cf723f9082, type: 3}
+  hookshotPrefab: {fileID: 1198852657148156, guid: 3ef3db068a1df1848b1397feb31544cc,
+    type: 2}
 --- !u!114 &114415613832964498
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -460,7 +465,7 @@ MonoBehaviour:
     m_Bits: 1
   triggerMask:
     serializedVersion: 2
-    m_Bits: 2048
+    m_Bits: 2099200
   oneWayPlatformMask:
     serializedVersion: 2
     m_Bits: 0
@@ -492,6 +497,17 @@ MonoBehaviour:
     m_RotationOrder: 4
   totalHorizontalRays: 8
   totalVerticalRays: 4
+--- !u!114 &114739384950232452
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1032298630864846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1aa2c57c1a580048b1dde571eda9f7e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114741298786619716
 MonoBehaviour:
   m_ObjectHideFlags: 1

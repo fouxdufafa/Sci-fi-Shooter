@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Prime31;
 
-public class RobotBoyCharacter : MonoBehaviour {
+public class RobotBoyCharacter : MonoBehaviour, IDamageable {
 
     public Vector2 Gravity = new Vector2(0, -40f);
     public float MaxHorizontalSpeed = 15f;
@@ -13,8 +13,11 @@ public class RobotBoyCharacter : MonoBehaviour {
     public float JumpSpeed = 20f;
     public float WallJumpSpeedMultiplier = 1.0f;
     public float WallJumpDuration = 0.1f;
+    public float HurtLossOfControlDuration = 0.25f;
+    public float InvulnerableDuration = 3f;
     public AudioClip jumpSound;
     public AudioClip dashSound;
+    public AudioClip hurtSound;
     public GameObject hookshotPrefab;
 
     CharacterController2D controller;
@@ -27,18 +30,7 @@ public class RobotBoyCharacter : MonoBehaviour {
     Vector2 aimDirection;
     WeaponSystemV2 weaponSystem;
     AudioSource audioSource;
-
-    struct States
-    {
-        public GroundedState Grounded;
-        public GroundedAimingState GroundedAim;
-        public AirborneState Airborne;
-        public DashingState Dashing;
-        public WallHuggingState WallHug;
-        public WallJumpingState WallJump;
-    }
-
-    public event Action<Damager> OnTakeDamage;
+    DamageReceiver damageReceiver;
 
 	// Use this for initialization
 	void Start () {
@@ -48,6 +40,7 @@ public class RobotBoyCharacter : MonoBehaviour {
         wallCheck = GetComponentInChildren<WallCheck>();
         weaponSystem = GetComponent<WeaponSystemV2>();
         audioSource = GetComponent<AudioSource>();
+        damageReceiver = GetComponent<DamageReceiver>();
         currentVelocity = Vector2.zero;
 
         sm = new CollisionAwareStateMachine();
@@ -211,10 +204,22 @@ public class RobotBoyCharacter : MonoBehaviour {
 
     public void TakeDamage(Damager damager)
     {
-        if (OnTakeDamage != null)
-        {
-            OnTakeDamage(damager);
-        }
+        audioSource.PlayOneShot(hurtSound);
+        sm.ChangeState(new HurtState(this, damager));
+    }
+
+    public void Knockback(Vector2 direction, float speed)
+    {
+        SetVelocity(direction * speed);
+    }
+
+    public IEnumerator MakeInvulnerable(float duration)
+    {
+        damageReceiver.enabled = false;
+        Debug.Log("Disabled damager");
+        yield return new WaitForSeconds(duration);
+        damageReceiver.enabled = true;
+        Debug.Log("Enabled damager");
     }
 
     public void FireHookshot()
