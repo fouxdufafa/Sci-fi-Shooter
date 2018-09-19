@@ -5,18 +5,21 @@ using System.Linq;
 public class Jump : IState, ICollisionAware
 {
     public float jumpDuration = 0.5f;
+    public float minJumpDistance = 5f;
 
     float startTime;
     float endTime;
 
     float maxRaycastDistance = 20f;
+    float verticalJumpFudgeDistance = 2f;
 
     // Points along bezier arc of jump
     Vector3 p0;
     Vector3 p1;
     Vector3 p2;
 
-    RaycastHit2D closestSurface;
+    RaycastHit2D currentSurface;
+    RaycastHit2D landingSurface;
 
     // Rotations
     Quaternion originRotation;
@@ -37,13 +40,28 @@ public class Jump : IState, ICollisionAware
         // p0 = current transform, 
         // p1 = player transform + height(collider)/2, 
         // p2 = raycast to find closest surface to player
-        closestSurface = FindClosestSurfaceTo(crawler.player.transform.position);
+        BoxCollider2D collider = crawler.GetComponent<BoxCollider2D>();
+
+        currentSurface = FindCurrentSurface(collider);
+        landingSurface = FindLandingSurface();
 
         p0 = crawler.transform.position;
-        p2 = AddColliderPadding(closestSurface, crawler.GetComponent<BoxCollider2D>());
-        p1 = Vector2.Lerp(p0, p2, 0.5f);
+        p2 = AddColliderPadding(landingSurface, collider);
+        p1 = FindMidpoint();
 
         crawler.animator.enabled = false;
+        crawler.audioSource.PlayOneShot(crawler.jumpSound);
+    }
+
+    Vector2 FindMidpoint()
+    {
+        // push midpoint in direction of landing normal if the start/endpoints create too flat of a horizontal
+        Vector2 midpoint = Vector2.Lerp(p0, p2, 0.5f);
+        //Debug.Log(Vector2.Dot(landingSurface.normal, Vector2.up));
+        if (Mathf.Approximately(1, Mathf.Abs(Vector2.Dot(landingSurface.normal, Vector2.up)))) {
+            midpoint += landingSurface.normal * verticalJumpFudgeDistance;
+        }
+        return midpoint;
     }
 
     Vector3 AddColliderPadding(RaycastHit2D surfaceHit, BoxCollider2D collider)
@@ -68,7 +86,7 @@ public class Jump : IState, ICollisionAware
 
         //Debug.Log("Hit1 overshoot: " + hit1Overshoot);
         //Debug.Log("Hit2 overshoot: " + hit2Overshoot);
-        Debug.Log("Collider size: " + collider.size);
+        //Debug.Log("Collider size: " + collider.size);
         Vector3 verticalFudge = normal * crawler.transform.localScale.y * (collider.size.y / 2 + skinWidth - collider.offset.y);
         Vector3 horizontalFudge = tangent * hit2Overshoot - tangent * hit1Overshoot;
 
@@ -77,14 +95,46 @@ public class Jump : IState, ICollisionAware
         return result;
     }
 
-    RaycastHit2D FindClosestSurfaceTo(Vector3 point)
+    bool IsSameSurface(RaycastHit2D hit1, RaycastHit2D hit2)
     {
+        return Mathf.Approximately(0, Vector2.Angle(hit1.normal, hit2.normal));
+    }
+
+    bool SatisfiesMinJumpDistance(RaycastHit2D surface)
+    {
+        return Vector2.Distance(currentSurface.point, surface.point) > minJumpDistance;
+    }
+
+    RaycastHit2D FindCurrentSurface(BoxCollider2D collider)
+    {
+        RaycastHit2D currentSurface = Physics2D.Raycast(crawler.transform.position, -crawler.transform.up, collider.size.y, crawler.crawlableLayers);
+        return currentSurface;
+    }
+
+    RaycastHit2D FindLandingSurface()
+    {
+        Vector3 point = crawler.player.transform.position;
+
         Vector3[] raycastDirections = { Vector3.up, Vector3.down, Vector3.right, Vector3.left };
 
         RaycastHit2D closestSurface = raycastDirections
             .Select(dir => Physics2D.Raycast(point, dir, maxRaycastDistance, crawler.crawlableLayers))
             .Where(hit => hit.collider != null)
-            .Aggregate((acc, next) => acc.distance < next.distance ? acc : next);
+            .Aggregate((acc, next) => {
+                Debug.Log("acc: " + acc.point);
+                Debug.Log("next: " + next.point);
+                // find closest surface that is still further than minjumpdistance
+                if (next.distance < acc.distance && SatisfiesMinJumpDistance(next))
+                {
+                    return next;
+                }
+                return acc;
+            });
+        Debug.Log("Done!");
+        Debug.Log("Distance from player: " + closestSurface.distance);
+        Debug.Log("Distance from crawler: " + Vector2.Distance(currentSurface.point, closestSurface.point));
+        Debug.Log("Current surface: " + currentSurface.point);
+        Debug.Log("Target surface: " + closestSurface.point);
 
         originRotation = crawler.transform.rotation;
         destRotation = Quaternion.FromToRotation(Vector2.up, closestSurface.normal);
@@ -114,14 +164,7 @@ public class Jump : IState, ICollisionAware
     // Update is called once per frame
     public void Update()
     {
-        float normalizedTime = (Time.time - startTime) / jumpDuration;
-
-        // If at the end of the arc, resume patrol state
-        if (normalizedTime > 1)
-        {
-            crawler.sm.ChangeState(new Patrol(crawler));
-            return;
-        }
+        float normalizedTime = Mathf.Clamp((Time.time - startTime) / jumpDuration, 0, 1);
 
         // calculate position along arc, move to that point
         Vector3 pos = CalculateBezier(p0, p1, p2, normalizedTime);
@@ -129,6 +172,15 @@ public class Jump : IState, ICollisionAware
 
         crawler.transform.position = pos;
         crawler.transform.rotation = rot;
+
+        // If at the end of the arc, resume patrol state
+        if (normalizedTime == 1)
+        {
+            crawler.cameraShake.Shake(0.7f, 0.2f);
+            crawler.audioSource.PlayOneShot(crawler.landingSound);
+            crawler.sm.ChangeState(new Patrol(crawler));
+            return;
+        }
     }
 
     Vector3 CalculateBezier(Vector3 p0, Vector3 p1, Vector3 p2, float t)

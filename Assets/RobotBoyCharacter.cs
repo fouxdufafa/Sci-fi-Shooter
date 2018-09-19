@@ -216,10 +216,8 @@ public class RobotBoyCharacter : MonoBehaviour, IDamageable {
     public IEnumerator MakeInvulnerable(float duration)
     {
         damageReceiver.enabled = false;
-        Debug.Log("Disabled damager");
         yield return new WaitForSeconds(duration);
         damageReceiver.enabled = true;
-        Debug.Log("Enabled damager");
     }
 
     public void FireHookshot()

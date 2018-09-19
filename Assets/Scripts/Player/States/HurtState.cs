@@ -27,7 +27,6 @@ public class HurtState : IState
         }
         character.Knockback(knockbackDir, knockbackSpeed);
 
-        Debug.Log("Starting coroutines");
         character.StartCoroutine(LossOfControlRoutine());
         character.StartCoroutine(character.MakeInvulnerable(character.InvulnerableDuration));
     }

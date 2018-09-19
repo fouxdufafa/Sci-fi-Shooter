@@ -17,7 +17,7 @@ public class PatrolMovement : MonoBehaviour {
 	
 	// Update is called once per frame
 	public void Move () {
-        if (c2d.Cast(transform.right, hits, speed * Time.deltaTime) != 0)
+        if (c2d.Cast(transform.right * Mathf.Sign(transform.localScale.x), hits, speed * Time.deltaTime) != 0)
         {
             Flip();
         }

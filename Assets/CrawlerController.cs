@@ -11,6 +11,9 @@ public class CrawlerController : MonoBehaviour, IDamageable {
     public AudioSource audioSource { get; private set; }
     public PatrolMovement movement { get; private set; }
     public RobotBoyCharacter player { get; private set; }
+    public CameraShake cameraShake { get; private set; }
+    public AudioClip landingSound;
+    public AudioClip jumpSound;
 
     public LayerMask crawlableLayers;
     public float timeBetweenJumps = 5f;
@@ -30,6 +33,7 @@ public class CrawlerController : MonoBehaviour, IDamageable {
         animator = GetComponent<Animator>();
         flasher = GetComponent<SpriteFlasher>();
         player = FindObjectOfType<RobotBoyCharacter>();
+        cameraShake = FindObjectOfType<CameraShake>();
         
         audioSource = GetComponent<AudioSource>();
 
@@ -69,7 +73,6 @@ public class CrawlerController : MonoBehaviour, IDamageable {
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            Debug.Log("Collided with player");
             DamageReceiver receiver = collision.gameObject.GetComponent<DamageReceiver>();
             receiver.TakeDamage(new Damager(10f, DamageForce.Average, DamageType.OneShot, false, gameObject));
         }
