@@ -55,6 +55,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DeploySpeed: 56
   ReelInSpeed: 28
+  MaxDistance: 15
   attachableLayers:
     serializedVersion: 2
     m_Bits: 513

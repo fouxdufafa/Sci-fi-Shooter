@@ -65,6 +65,11 @@ public class GroundedAimingState : IState
             sm.ChangeState(new GroundedState(character));
             return;
         }
+
+        if (!character.IsGrounded())
+        {
+            sm.ChangeState(new AirborneState(character));
+        }
     }
 
     public void Exit()

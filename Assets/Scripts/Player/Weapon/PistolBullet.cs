@@ -16,10 +16,16 @@ public class PistolBullet : MonoBehaviour
     {
         Debug.Log("Bullet hit trigger collider");
         DamageReceiver receiver = collision.gameObject.GetComponent<DamageReceiver>();
+        IDamageable damageable = collision.gameObject.GetComponent<IDamageable>();
         if (receiver != null) 
         {
-            Debug.Log("Hit an IDamageable");
+            Debug.Log("Hit a DamageReceiver");
             receiver.TakeDamage(new Damager(damage));
+        }
+        else if (damageable != null)
+        {
+            Debug.Log("Hit an IDamageable");
+            damageable.TakeDamage(new Damager(damage));
         }
         StartCoroutine(DestroyAtEndOfFrame());
     }

@@ -63,6 +63,11 @@ public class AirborneAimingState : IState
             character.FireHookshot();
         }
 
+        if (character.IsTouchingCeiling())
+        {
+            character.SetVerticalVelocity(0);
+        }
+
         if (character.IsGrounded())
         {
             sm.ChangeState(new GroundedState(character));

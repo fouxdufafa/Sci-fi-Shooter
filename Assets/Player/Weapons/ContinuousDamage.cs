@@ -11,23 +11,34 @@ public class ContinuousDamage : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D collider)
     {
-        Debug.Log("Started Damage");
         GameObject target = collider.gameObject;
-        Coroutine damager = StartCoroutine(DamageCoroutine(target));
-        damageRoutines.Add(target, damager);
+        DamageReceiver receiver = target.GetComponent<DamageReceiver>();
+        IDamageable damageable = target.GetComponent<IDamageable>();
+        
+        if (receiver != null || damageable != null)
+        {
+            Coroutine damager = StartCoroutine(DamageCoroutine(target));
+            damageRoutines.Add(target, damager);
+        }
     }
 
     IEnumerator DamageCoroutine(GameObject target)
     {
+        Debug.Log("Started damage");
         DamageReceiver receiver;
+        IDamageable damageable;
         while (target != null)
         {
             Debug.Log("Damaging...");
             receiver = target.GetComponent<DamageReceiver>();
+            damageable = target.GetComponent<IDamageable>();
             if (receiver != null)
             {
                 receiver.TakeDamage(new Damager(dps * Time.deltaTime, DamageForce.None, DamageType.Continuous));
-                Debug.Log("Damaged!");
+            }
+            else if (damageable != null)
+            {
+                damageable.TakeDamage(new Damager(dps * Time.deltaTime, DamageForce.None, DamageType.Continuous));
             }
             yield return null;
         }
@@ -35,12 +46,12 @@ public class ContinuousDamage : MonoBehaviour {
 
     private void OnTriggerExit2D(Collider2D collider)
     {
-        Debug.Log("Stopped Damage");
         GameObject target = collider.gameObject;
         Coroutine damager;
         bool exists = damageRoutines.TryGetValue(target, out damager);
         if (exists && damager != null)
         {
+            Debug.Log("Stopped Damage");
             StopCoroutine(damager);
         }
         damageRoutines.Remove(target);

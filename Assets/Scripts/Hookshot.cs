@@ -5,6 +5,7 @@ public class Hookshot : MonoBehaviour
 {
     public float DeploySpeed = 100f;
     public float ReelInSpeed = 50f;
+    public float MaxDistance = 30f;
     public LayerMask attachableLayers;
 
     RobotBoyCharacter character;
@@ -45,6 +46,10 @@ public class Hookshot : MonoBehaviour
             else
             {
                 Move(velocity * Time.deltaTime);
+                if (Vector3.Distance(transform.position, character.transform.position) >= MaxDistance)
+                {
+                    Remove();
+                }
             }
         }
         UpdateTrailRendererPositions();

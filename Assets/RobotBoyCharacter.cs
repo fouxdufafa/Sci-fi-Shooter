@@ -8,6 +8,7 @@ public class RobotBoyCharacter : MonoBehaviour, IDamageable {
 
     public Vector2 Gravity = new Vector2(0, -40f);
     public float MaxHorizontalSpeed = 15f;
+    public float MaxVerticalSpeed = 10f;
     public float DashSpeedMultiplier = 1.2f;
     public float DashDuration = 0.3f;
     public float JumpSpeed = 20f;
@@ -55,8 +56,17 @@ public class RobotBoyCharacter : MonoBehaviour, IDamageable {
 
     public void Move()
     {
+        ClampVelocity();
         controller.move(currentVelocity * Time.deltaTime);
         UpdateWeaponsTransform();
+    }
+
+    public void ClampVelocity()
+    {
+        if (Mathf.Abs(currentVelocity.y) > MaxVerticalSpeed)
+        {
+            currentVelocity.y = Mathf.Sign(currentVelocity.y) * MaxVerticalSpeed;
+        }
     }
 
     public void Jump()
@@ -125,7 +135,10 @@ public class RobotBoyCharacter : MonoBehaviour, IDamageable {
     public bool IsTouchingCeiling()
     {
         controller.move(new Vector2(0, 0.001f));
-        return controller.isTouchingCeiling;
+        bool isTouching = controller.isTouchingCeiling;
+        controller.move(new Vector2(0, -0.001f));
+
+        return isTouching;
     }
 
     public void ApplyGravity()
