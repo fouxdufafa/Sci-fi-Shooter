@@ -8,6 +8,7 @@ public class HookshotAttachedState : IState, ICollisionAware
     Hookshot hookshot;
 
     float epsilon = 1f;
+    float previousDistance;
 
     public HookshotAttachedState(RobotBoyCharacter character)
     {
@@ -21,11 +22,20 @@ public class HookshotAttachedState : IState, ICollisionAware
         Vector2 velocity = (hookshot.transform.position - character.transform.position).normalized * hookshot.ReelInSpeed;
         character.SetVelocity(velocity);
         character.ReleaseWeapon();
+
+        previousDistance = Vector2.Distance(character.transform.position, hookshot.transform.position);
     }
 
     public void Update()
     {
         character.Move();
+
+        float distanceToHookshot = Vector2.Distance(character.transform.position, hookshot.transform.position);
+        if (distanceToHookshot > previousDistance)
+        {
+            character.DetachFromHookshot(hookshot);
+        }
+        previousDistance = distanceToHookshot;
     }
 
     public void Exit()
@@ -37,6 +47,6 @@ public class HookshotAttachedState : IState, ICollisionAware
     public void HandleCollision(Collider2D collider)
     {
         Debug.Log("Hookshot interrupted by collision");
-        sm.ChangeState(new AirborneState(character));
+        character.DetachFromHookshot(hookshot);
     }
 }
