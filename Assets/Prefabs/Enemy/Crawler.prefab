@@ -20,7 +20,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4832050883565750}
   - component: {fileID: 70323985883447736}
-  - component: {fileID: 114700139191545054}
   m_Layer: 21
   m_Name: Body
   m_TagString: Untagged
@@ -38,7 +37,6 @@ GameObject:
   - component: {fileID: 4414948533885406}
   - component: {fileID: 58782285604842426}
   - component: {fileID: 114937711216557460}
-  - component: {fileID: 114904971507946446}
   m_Layer: 21
   m_Name: Eye
   m_TagString: Untagged
@@ -55,7 +53,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4078087811992330}
   - component: {fileID: 70450872247761876}
-  - component: {fileID: 114259709613625504}
   m_Layer: 21
   m_Name: Neck
   m_TagString: Untagged
@@ -382,39 +379,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   color: {r: 1, g: 0, b: 0, a: 1}
   duration: 0.1
---- !u!114 &114259709613625504
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1361846762892108}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 88dc6da0be3787b439ede59fbfecb4df, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &114700139191545054
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1275354286113730}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 88dc6da0be3787b439ede59fbfecb4df, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &114904971507946446
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1355441273897502}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 88dc6da0be3787b439ede59fbfecb4df, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &114937711216557460
 MonoBehaviour:
   m_ObjectHideFlags: 1
